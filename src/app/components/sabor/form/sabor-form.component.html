@@ -1,0 +1,44 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button mat-icon-button (click)="voltar()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span>{{ isEditMode ? 'Editar' : 'Novo' }} Sabor</span>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="saborForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Nome -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome do Sabor</mat-label>
+        <input matInput formControlName="nome" placeholder="Ex: Pequi" required>
+        <mat-error *ngIf="saborForm.get('nome')?.hasError('required')">
+          Nome é obrigatório
+        </mat-error>
+        <mat-error *ngIf="saborForm.get('nome')?.hasError('minlength')">
+          Nome deve ter no mínimo 3 caracteres
+        </mat-error>
+        <mat-error *ngIf="saborForm.get('nome')?.hasError('maxlength')">
+          Nome deve ter no máximo 100 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Botões -->
+      <div class="form-actions">
+        <button mat-raised-button type="button" (click)="onCancel()">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!saborForm.valid">
+          <mat-icon>save</mat-icon>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

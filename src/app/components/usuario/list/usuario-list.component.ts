@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { Usuario } from '../../../models/usuario.model';
 import { Perfil } from '../../../models/enums.model';
 import { UsuarioService } from '../../../services/usuario.service';
+import { CpfPipe } from '../../../pipes/cpf.pipe';
 
 @Component({
   selector: 'app-usuario-list',
@@ -27,7 +28,8 @@ import { UsuarioService } from '../../../services/usuario.service';
     MatPaginatorModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    CpfPipe
   ],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.css'
@@ -90,36 +92,51 @@ export class UsuarioListComponent implements OnInit {
     const usuariosEstaticos: Usuario[] = [
       {
         id: 1,
-        nome: 'João Silva',
+        nome: 'João',
+        sobrenome: 'Silva',
         email: 'joao.silva@email.com',
+        cpf: '12345678901',
+        dataNascimento: '1990-05-15',
         perfis: [Perfil.ADMIN],
         ativo: true,
-        datainclusao: '2025-11-01T10:30:00',
+        dataInclusao: '2025-11-01T10:30:00',
         telefones: [],
         enderecos: [],
-        cartoes: []
+        cartoes: [],
+        favoritos: [],
+        compras: []
       },
       {
         id: 2,
-        nome: 'Maria Santos',
+        nome: 'Maria',
+        sobrenome: 'Santos',
         email: 'maria.santos@email.com',
+        cpf: '98765432109',
+        dataNascimento: '1995-08-20',
         perfis: [Perfil.USER],
         ativo: true,
-        datainclusao: '2025-11-02T14:15:00',
+        dataInclusao: '2025-11-02T14:15:00',
         telefones: [],
         enderecos: [],
-        cartoes: []
+        cartoes: [],
+        favoritos: [],
+        compras: []
       },
       {
         id: 3,
-        nome: 'Pedro Oliveira',
+        nome: 'Pedro',
+        sobrenome: 'Oliveira',
         email: 'pedro.oliveira@email.com',
+        cpf: '11122233344',
+        dataNascimento: '1988-12-10',
         perfis: [Perfil.USER],
         ativo: false,
-        datainclusao: '2025-11-03T09:00:00',
+        dataInclusao: '2025-11-03T09:00:00',
         telefones: [],
         enderecos: [],
-        cartoes: []
+        cartoes: [],
+        favoritos: [],
+        compras: []
       }
     ];
     this.usuarios.set(usuariosEstaticos);

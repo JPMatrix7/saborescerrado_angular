@@ -13,6 +13,8 @@ import { CidadeFormComponent } from './components/cidade/form/cidade-form.compon
 import { UsuarioListComponent } from './components/usuario/list/usuario-list.component';
 import { UsuarioFormComponent } from './components/usuario/form/usuario-form.component';
 import { PedidoListComponent } from './components/pedido/list/pedido-list.component';
+import { SaborListComponent } from './components/sabor/list/sabor-list.component';
+import { SaborFormComponent } from './components/sabor/form/sabor-form.component';
 import { AdminTemplateComponent } from './components/template/admin-template.component';
 
 export const routes: Routes = [
@@ -57,6 +59,11 @@ export const routes: Routes = [
       
       // Rotas de Pedidos
       { path: 'pedidos', component: PedidoListComponent },
+      
+      // Rotas de Sabores
+      { path: 'sabores', component: SaborListComponent },
+      { path: 'sabores/form', component: SaborFormComponent },
+      { path: 'sabores/form/:id', component: SaborFormComponent },
     ]
   }
 ];

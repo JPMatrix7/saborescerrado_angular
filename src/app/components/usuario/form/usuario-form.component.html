@@ -87,14 +87,22 @@
 
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Data de Nascimento</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="dataNascimento">
+          <input matInput 
+                 [matDatepicker]="picker" 
+                 formControlName="dataNascimento"
+                 placeholder="DD/MM/AAAA"
+                 (input)="formatarData($event)">
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
+          <mat-hint>Digite DD/MM/AAAA ou use o calendário</mat-hint>
           <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('required')">
             Data de nascimento é obrigatória
           </mat-error>
           <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('dataFutura')">
             Data não pode ser futura
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('dataInvalida')">
+            Data inválida
           </mat-error>
           <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('backend')">
             {{ usuarioForm.get('dataNascimento')?.errors?.['backend'] }}

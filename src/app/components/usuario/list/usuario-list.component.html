@@ -27,7 +27,7 @@
 
       <ng-container matColumnDef="nomeCompleto">
         <th mat-header-cell *matHeaderCellDef>Nome Completo</th>
-        <td mat-cell *matCellDef="let usuario">{{ usuario.nome }}</td>
+        <td mat-cell *matCellDef="let usuario">{{ usuario.nome }} {{ usuario.sobrenome }}</td>
       </ng-container>
 
       <ng-container matColumnDef="email">
@@ -37,7 +37,7 @@
 
       <ng-container matColumnDef="cpf">
         <th mat-header-cell *matHeaderCellDef>CPF</th>
-        <td mat-cell *matCellDef="let usuario">{{ formatCpf(usuario.cpf) }}</td>
+        <td mat-cell *matCellDef="let usuario">{{ usuario.cpf | cpf }}</td>
       </ng-container>
 
       <ng-container matColumnDef="perfil">
@@ -60,7 +60,7 @@
 
       <ng-container matColumnDef="dataInclusao">
         <th mat-header-cell *matHeaderCellDef>Data Cadastro</th>
-        <td mat-cell *matCellDef="let usuario">{{ formatData(usuario.datainclusao) }}</td>
+        <td mat-cell *matCellDef="let usuario">{{ formatData(usuario.dataInclusao) }}</td>
       </ng-container>
 
       <ng-container matColumnDef="acoes">
@@ -69,7 +69,7 @@
           <button mat-icon-button color="primary" (click)="navigateToForm(usuario.id)" matTooltip="Editar">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteUsuario(usuario.id!, usuario.nome)" matTooltip="Desativar">
+          <button mat-icon-button color="warn" (click)="deleteUsuario(usuario.id!, usuario.nome + ' ' + usuario.sobrenome)" matTooltip="Desativar">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

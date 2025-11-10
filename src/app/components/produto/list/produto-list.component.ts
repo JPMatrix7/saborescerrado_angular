@@ -32,15 +32,22 @@ export class ProdutoListComponent implements OnInit {
   loadProdutos(): void {
     this.produtoService.findAll().subscribe({
       next: (data) => {
-        console.log('Produtos carregados:', data);
-        // Log para ver a estrutura das categorias
+        console.log('✅ Produtos carregados:', data);
+        // Log detalhado para debug
         if (data.length > 0) {
-          console.log('Exemplo de produto:', data[0]);
-          console.log('Categorias do primeiro produto:', data[0].categorias);
+          console.log('📦 Primeiro produto completo:', data[0]);
+          console.log('🏷️ Categorias:', data[0].categorias);
+          console.log('🏷️ Tipo de categorias:', typeof data[0].categorias);
+          console.log('🏷️ É array?', Array.isArray(data[0].categorias));
+          if (data[0].categorias && data[0].categorias.length > 0) {
+            console.log('🏷️ Primeira categoria:', data[0].categorias[0]);
+          }
         }
         this.produtos.set(data);
       },
-      error: (error) => console.error('Erro ao carregar produtos:', error)
+      error: (error) => {
+        console.error('❌ Erro ao carregar produtos:', error);
+      }
     });
   }
 
@@ -59,6 +66,17 @@ export class ProdutoListComponent implements OnInit {
         error: (error) => console.error('Erro ao excluir produto:', error)
       });
     }
+  }
+
+  getCategoriaNome(produto: Produto): string {
+    // Tenta várias formas de acessar a categoria
+    if (produto.categorias && produto.categorias.length > 0) {
+      return produto.categorias[0].nome || '-';
+    }
+    if ((produto as any).categoria?.nome) {
+      return (produto as any).categoria.nome;
+    }
+    return '-';
   }
 
   voltar(): void {

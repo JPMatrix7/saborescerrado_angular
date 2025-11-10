@@ -3,37 +3,54 @@ import { Endereco } from './endereco.model';
 import { Cartao } from './cartao.model';
 import { Telefone } from './telefone.model';
 
-// Interface base Usuario
+// Interface completa retornada pela API GET /usuario/id/{id}
 export interface Usuario {
   id?: number;
   nome: string;
+  sobrenome: string;
   email: string;
+  cpf: string;
+  dataNascimento: string;
   senha?: string; // Não deve ser retornado pela API
-  perfis?: Perfil[];
-  ativo?: boolean;
-  datainclusao?: string;
-  enderecos?: Endereco[];
-  cartoes?: Cartao[];
-  telefones?: Telefone[];
-  favoritos?: any[]; // Licor[] - evitando import circular
-  compras?: any[]; // Compra[] - evitando import circular
+  perfis: Perfil[];
+  ativo: boolean;
+  dataInclusao: string;
+  enderecos: Endereco[];
+  cartoes: Cartao[];
+  telefones: Telefone[];
+  favoritos: any[]; // Licor[] - evitando import circular
+  compras: any[]; // Compra[] - evitando import circular
 }
 
-// DTO para criar/editar usuário
-export interface PessoaFisicaDTO {
+// DTO para criar usuário (POST /usuario)
+export interface UsuarioCreateDTO {
   nome: string;
   sobrenome: string;
   email: string;
-  senha?: string; // Obrigatório apenas na criação
   cpf: string;
-  dataNascimento: string; // Formato ISO 8601: YYYY-MM-DD
+  dataNascimento: string; // ISO 8601: YYYY-MM-DD
+  senha: string; // Obrigatório na criação
+  perfis?: Perfil[]; // Opcional, default ["USER"]
 }
 
-// Pessoa Física (Cliente)
-export interface PessoaFisica extends Usuario {
-  cpf: string;
-  dataNascimento: Date;
+// DTO para atualizar usuário (PUT /usuario/{id})
+export interface UsuarioUpdateDTO {
+  nome: string;
   sobrenome: string;
+  email: string;
+  cpf: string;
+  dataNascimento: string; // ISO 8601: YYYY-MM-DD
+  senha?: string; // Opcional na edição
+}
+
+// Manter compatibilidade com código antigo
+export interface PessoaFisicaDTO extends UsuarioUpdateDTO {
+  perfis?: Perfil[];
+}
+
+// Pessoa Física (Cliente) - compatibilidade
+export interface PessoaFisica extends Omit<Usuario, 'dataNascimento'> {
+  dataNascimento: Date | string;
 }
 
 // Pessoa Jurídica
