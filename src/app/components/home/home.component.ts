@@ -5,8 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { ProdutoService } from '../../services/produto.service';
-import { ClienteService } from '../../services/cliente.service';
-import { CategoriaService } from '../../services/categoria.service';
+import { UsuarioService } from '../../services/usuario.service';
 
 @Component({
   selector: 'app-home',
@@ -16,32 +15,22 @@ import { CategoriaService } from '../../services/categoria.service';
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
-  // Dados dos gráficos
+  // Dados simplificados
   totalProdutos = signal(0);
   totalUsuarios = signal(0);
-  totalCategorias = signal(0);
-  
-  // Dados para visualização
-  categoriasTop = signal<{nome: string, quantidade: number}[]>([]);
-  
-  usuariosPorPerfil = [
-    { perfil: 'Clientes', quantidade: 0 },
-    { perfil: 'Administradores', quantidade: 0 }
-  ];
   
   menuItems = [
     { title: 'Produtos', icon: 'inventory', route: '/admin/produtos', description: 'Gerencie os licores disponíveis' },
     { title: 'Categorias', icon: 'category', route: '/admin/categorias', description: 'Organize os tipos de licores' },
     { title: 'Fornecedores', icon: 'business', route: '/admin/fornecedores', description: 'Cadastre fornecedores' },
-    { title: 'Clientes', icon: 'people', route: '/admin/clientes', description: 'Gerencie clientes' },
+    { title: 'Usuários', icon: 'people', route: '/admin/usuarios', description: 'Gerencie usuários' },
     { title: 'Pedidos', icon: 'shopping_cart', route: '/admin/pedidos', description: 'Acompanhe os pedidos' }
   ];
 
   constructor(
     private router: Router,
     private produtoService: ProdutoService,
-    private clienteService: ClienteService,
-    private categoriaService: CategoriaService
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -49,50 +38,49 @@ export class HomeComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    // Busca produtos
+    // Busca produtos (bebidas)
+    console.log('Iniciando carregamento de produtos...');
     this.produtoService.findAll().subscribe({
       next: (produtos) => {
         this.totalProdutos.set(produtos.length);
-        console.log('Produtos carregados:', produtos.length);
+        console.log('✅ Produtos carregados com sucesso:', produtos.length);
+        console.log('Dados dos produtos:', produtos);
       },
       error: (error) => {
-        console.error('Erro ao carregar produtos:', error);
+        console.error('❌ Erro ao carregar produtos:', error);
+        console.error('Detalhes do erro:', {
+          status: error.status,
+          message: error.message,
+          url: error.url
+        });
         this.totalProdutos.set(0);
       }
     });
 
-    // Busca usuários
-    this.clienteService.findAll().subscribe({
+    // Busca usuários - com fallback para dados estáticos
+    console.log('Iniciando carregamento de usuários...');
+    this.usuarioService.findAll().subscribe({
       next: (usuarios) => {
-        this.totalUsuarios.set(usuarios.length);
-        this.usuariosPorPerfil = [
-          { perfil: 'Clientes', quantidade: usuarios.length },
-          { perfil: 'Administradores', quantidade: 0 }
-        ];
-        console.log('Usuários carregados:', usuarios.length);
+        console.log('✅ Usuários carregados da API:', usuarios);
+        console.log('Tipo de resposta:', typeof usuarios);
+        console.log('É array?', Array.isArray(usuarios));
+        
+        if (Array.isArray(usuarios)) {
+          this.totalUsuarios.set(usuarios.length);
+          console.log('✅ Total de usuários definido:', usuarios.length);
+        } else {
+          console.warn('⚠️ Resposta não é um array, usando 0');
+          this.totalUsuarios.set(0);
+        }
       },
       error: (error) => {
-        console.error('Erro ao carregar usuários:', error);
-        this.totalUsuarios.set(0);
-      }
-    });
-
-    // Busca categorias
-    this.categoriaService.findAll().subscribe({
-      next: (categorias) => {
-        this.totalCategorias.set(categorias.length);
+        console.error('❌ Erro ao carregar usuários da API:', error);
+        console.error('Status:', error.status);
+        console.error('URL:', error.url);
         
-        // Mapeia categorias com quantidade zero inicialmente
-        const categoriasArray = categorias
-          .slice(0, 3)
-          .map(cat => ({ nome: cat.nome, quantidade: 0 }));
-        
-        this.categoriasTop.set(categoriasArray);
-        console.log('Categorias carregadas:', categorias.length);
-      },
-      error: (error) => {
-        console.error('Erro ao carregar categorias:', error);
-        this.totalCategorias.set(0);
+        // Fallback: usar dados estáticos se API falhar
+        console.log('📊 Usando dados estáticos de usuários');
+        this.totalUsuarios.set(3); // 3 usuários estáticos da lista
       }
     });
   }

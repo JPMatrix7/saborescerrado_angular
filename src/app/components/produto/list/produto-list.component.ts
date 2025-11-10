@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +21,8 @@ export class ProdutoListComponent implements OnInit {
 
   constructor(
     private produtoService: ProdutoService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -58,5 +59,9 @@ export class ProdutoListComponent implements OnInit {
         error: (error) => console.error('Erro ao excluir produto:', error)
       });
     }
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

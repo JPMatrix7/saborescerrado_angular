@@ -1,0 +1,152 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button mat-icon-button (click)="voltar()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span>{{ isEditMode ? 'Editar' : 'Novo' }} Usuário</span>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Nome e Sobrenome -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="João">
+          <mat-error *ngIf="usuarioForm.get('nome')?.hasError('required')">
+            Nome é obrigatório
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('nome')?.hasError('minlength')">
+            Nome deve ter no mínimo 3 caracteres
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('nome')?.hasError('maxlength')">
+            Nome deve ter no máximo 100 caracteres
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('nome')?.hasError('backend')">
+            {{ usuarioForm.get('nome')?.errors?.['backend'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Sobrenome</mat-label>
+          <input matInput formControlName="sobrenome" placeholder="Silva">
+          <mat-error *ngIf="usuarioForm.get('sobrenome')?.hasError('required')">
+            Sobrenome é obrigatório
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('sobrenome')?.hasError('minlength')">
+            Sobrenome deve ter no mínimo 3 caracteres
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('sobrenome')?.hasError('maxlength')">
+            Sobrenome deve ter no máximo 100 caracteres
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('sobrenome')?.hasError('backend')">
+            {{ usuarioForm.get('sobrenome')?.errors?.['backend'] }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>E-mail</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="joao.silva@email.com">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('required')">
+          E-mail é obrigatório
+        </mat-error>
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('email')">
+          E-mail inválido
+        </mat-error>
+        <mat-error *ngIf="usuarioForm.get('email')?.hasError('backend')">
+          {{ usuarioForm.get('email')?.errors?.['backend'] }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- CPF e Data de Nascimento -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpf" placeholder="123.456.789-01" 
+                 maxlength="14" (input)="formatarCpf($event)">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-hint>Somente números são aceitos</mat-hint>
+          <mat-error *ngIf="usuarioForm.get('cpf')?.hasError('required')">
+            CPF é obrigatório
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('cpf')?.hasError('cpfInvalido')">
+            CPF inválido (11 dígitos)
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('cpf')?.hasError('backend')">
+            {{ usuarioForm.get('cpf')?.errors?.['backend'] }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Data de Nascimento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dataNascimento">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('required')">
+            Data de nascimento é obrigatória
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('dataFutura')">
+            Data não pode ser futura
+          </mat-error>
+          <mat-error *ngIf="usuarioForm.get('dataNascimento')?.hasError('backend')">
+            {{ usuarioForm.get('dataNascimento')?.errors?.['backend'] }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Senha (apenas ao criar) -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditMode">
+        <mat-label>Senha</mat-label>
+        <input matInput formControlName="senha" [type]="hidePassword ? 'password' : 'text'" 
+               placeholder="Mínimo 6 caracteres">
+        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-hint>Mínimo 6 caracteres</mat-hint>
+        <mat-error *ngIf="usuarioForm.get('senha')?.hasError('required')">
+          Senha é obrigatória
+        </mat-error>
+        <mat-error *ngIf="usuarioForm.get('senha')?.hasError('minlength')">
+          Senha deve ter no mínimo 6 caracteres
+        </mat-error>
+        <mat-error *ngIf="usuarioForm.get('senha')?.hasError('backend')">
+          {{ usuarioForm.get('senha')?.errors?.['backend'] }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Perfil -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Perfil</mat-label>
+        <mat-select formControlName="perfis" [multiple]="false">
+          <mat-option *ngFor="let perfil of perfisDisponiveis" [value]="perfil.value">
+            {{ perfil.label }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>security</mat-icon>
+        <mat-error *ngIf="usuarioForm.get('perfis')?.hasError('required')">
+          Selecione um perfil
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Botões -->
+      <div class="form-actions">
+        <button mat-raised-button type="button" (click)="onCancel()">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!usuarioForm.valid">
+          <mat-icon>save</mat-icon>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -1,11 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProdutoService } from '../../../services/produto.service';
 import { CategoriaService } from '../../../services/categoria.service';
@@ -29,7 +30,8 @@ import { TipoLicor } from '../../../models/enums.model';
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    MatCardModule
+    MatCardModule,
+    MatIconModule
   ],
   templateUrl: './produto-form.component.html',
   styleUrl: './produto-form.component.css'
@@ -54,7 +56,8 @@ export class ProdutoFormComponent implements OnInit {
     private embalagemService: EmbalagemService,
     private safraService: SafraService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {
     this.createForm();
   }
@@ -219,5 +222,9 @@ export class ProdutoFormComponent implements OnInit {
 
   onCancel(): void {
     this.router.navigate(['/admin/produtos']);
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

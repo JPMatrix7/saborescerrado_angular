@@ -1,11 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CidadeService } from '../../../services/cidade.service';
 import { EstadoService } from '../../../services/estado.service';
@@ -21,7 +22,8 @@ import { Cidade, Estado } from '../../../models/endereco.model';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    MatIconModule
   ],
   templateUrl: './cidade-form.component.html',
   styleUrl: './cidade-form.component.css'
@@ -37,7 +39,8 @@ export class CidadeFormComponent implements OnInit {
     private cidadeService: CidadeService,
     private estadoService: EstadoService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {
     this.createForm();
   }
@@ -105,5 +108,9 @@ export class CidadeFormComponent implements OnInit {
 
   onCancel(): void {
     this.router.navigate(['/admin/cidades']);
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

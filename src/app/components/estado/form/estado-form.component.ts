@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstadoService } from '../../../services/estado.service';
 import { Estado } from '../../../models/endereco.model';
@@ -18,7 +19,8 @@ import { Estado } from '../../../models/endereco.model';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    MatIconModule
   ],
   templateUrl: './estado-form.component.html',
   styleUrl: './estado-form.component.css'
@@ -32,7 +34,8 @@ export class EstadoFormComponent implements OnInit {
     private fb: FormBuilder,
     private estadoService: EstadoService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {
     this.createForm();
   }
@@ -83,5 +86,9 @@ export class EstadoFormComponent implements OnInit {
 
   onCancel(): void {
     this.router.navigate(['/admin/estados']);
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

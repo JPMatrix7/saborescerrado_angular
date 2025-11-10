@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FornecedorService } from '../../../services/fornecedor.service';
 import { Fornecedor } from '../../../models/fornecedor.model';
@@ -18,7 +19,8 @@ import { Fornecedor } from '../../../models/fornecedor.model';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    MatIconModule
   ],
   templateUrl: './fornecedor-form.component.html',
   styleUrl: './fornecedor-form.component.css'
@@ -32,7 +34,8 @@ export class FornecedorFormComponent implements OnInit {
     private fb: FormBuilder,
     private fornecedorService: FornecedorService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {
     this.createForm();
   }
@@ -86,5 +89,9 @@ export class FornecedorFormComponent implements OnInit {
 
   onCancel(): void {
     this.router.navigate(['/admin/fornecedores']);
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

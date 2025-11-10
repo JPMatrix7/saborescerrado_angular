@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +21,8 @@ export class FornecedorListComponent implements OnInit {
 
   constructor(
     private fornecedorService: FornecedorService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -50,5 +51,9 @@ export class FornecedorListComponent implements OnInit {
         error: (error) => console.error('Erro ao excluir fornecedor:', error)
       });
     }
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

@@ -1,0 +1,125 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button mat-icon-button (click)="voltar()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span>Pedidos</span>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <div class="pedidos-container">
+      <mat-expansion-panel *ngFor="let pedido of pedidos()" class="pedido-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <div class="panel-title-content">
+              <span class="pedido-id">Pedido #{{ pedido.id }}</span>
+              <mat-chip [color]="getStatusColor(pedido.status)" highlighted>
+                {{ getStatusLabel(pedido.status) }}
+              </mat-chip>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="panel-description-content">
+              <span>{{ pedido.dataCompra | date: 'dd/MM/yyyy' }}</span>
+              <span class="valor-total">R$ {{ pedido.valorTotal.toFixed(2) }}</span>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="pedido-details">
+          <div class="info-section">
+            <h4>Informações do Pedido</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>Data da Compra:</strong>
+                <span>{{ pedido.dataCompra | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="info-item">
+                <strong>Forma de Pagamento:</strong>
+                <span>{{ getFormaPagamentoLabel(pedido.formaPagamento) }}</span>
+              </div>
+              <div class="info-item">
+                <strong>Situação Pagamento:</strong>
+                <span>
+                  <mat-chip [color]="pedido.pago ? '' : 'warn'" highlighted>
+                    {{ pedido.pago ? 'Pago' : 'Pendente' }}
+                  </mat-chip>
+                </span>
+              </div>
+              <div class="info-item" *ngIf="pedido.codigoRastreio">
+                <strong>Código de Rastreio:</strong>
+                <span>{{ pedido.codigoRastreio }}</span>
+              </div>
+              <div class="info-item" *ngIf="pedido.dataPrevista">
+                <strong>Previsão de Entrega:</strong>
+                <span>{{ pedido.dataPrevista | date: 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="info-item" *ngIf="pedido.dataEntrega">
+                <strong>Data de Entrega:</strong>
+                <span>{{ pedido.dataEntrega | date: 'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="itens-section">
+            <h4>Itens do Pedido</h4>
+            <table mat-table [dataSource]="pedido.itens" class="itens-table">
+              
+              <ng-container matColumnDef="produto">
+                <th mat-header-cell *matHeaderCellDef>Produto</th>
+                <td mat-cell *matCellDef="let item">{{ item.licor.nome }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="quantidade">
+                <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+                <td mat-cell *matCellDef="let item">{{ item.quantidade }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="precoUnitario">
+                <th mat-header-cell *matHeaderCellDef>Preço Unit.</th>
+                <td mat-cell *matCellDef="let item">R$ {{ item.precoUnitario.toFixed(2) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="subtotal">
+                <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+                <td mat-cell *matCellDef="let item">R$ {{ item.subtotal!.toFixed(2) }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['produto', 'quantidade', 'precoUnitario', 'subtotal']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['produto', 'quantidade', 'precoUnitario', 'subtotal'];"></tr>
+            </table>
+
+            <div class="total-section">
+              <strong>Valor Total:</strong>
+              <span class="total-value">R$ {{ pedido.valorTotal.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <div class="actions-section">
+            <button 
+              mat-raised-button 
+              color="warn" 
+              (click)="cancelarPedido(pedido.id!)"
+              [disabled]="pedido.status === 'CANCELADO' || pedido.status === 'ENTREGUE'">
+              <mat-icon>cancel</mat-icon>
+              Cancelar Pedido
+            </button>
+            <button mat-raised-button color="primary" (click)="verDetalhes(pedido)">
+              <mat-icon>visibility</mat-icon>
+              Ver Mais Detalhes
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+
+    <div *ngIf="pedidos().length === 0" class="no-pedidos">
+      <mat-icon>shopping_cart</mat-icon>
+      <p>Nenhum pedido encontrado</p>
+    </div>
+  </mat-card-content>
+</mat-card>

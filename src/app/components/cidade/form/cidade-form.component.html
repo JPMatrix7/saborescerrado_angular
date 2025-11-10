@@ -1,6 +1,13 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>{{ isEditMode ? 'Editar Cidade' : 'Nova Cidade' }}</mat-card-title>
+    <mat-card-title>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button mat-icon-button (click)="voltar()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span>{{ isEditMode ? 'Editar Cidade' : 'Nova Cidade' }}</span>
+      </div>
+    </mat-card-title>
   </mat-card-header>
 
   <mat-card-content>

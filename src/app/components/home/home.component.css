@@ -88,6 +88,14 @@
   padding: 16px 0;
 }
 
+/* Conteúdo centralizado para cards simplificados */
+.stats-content.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
 .stats-number {
   font-size: 4.5em;
   font-weight: bold;
@@ -95,6 +103,12 @@
   margin: 20px 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   letter-spacing: -2px;
+}
+
+/* Cards simplificados - sem detalhes extras */
+.simplified-card .stats-number {
+  font-size: 5em;
+  margin: 0;
 }
 
 .stats-label {

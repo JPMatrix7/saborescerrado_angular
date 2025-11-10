@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +21,8 @@ export class CidadeListComponent implements OnInit {
 
   constructor(
     private cidadeService: CidadeService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -54,5 +55,9 @@ export class CidadeListComponent implements OnInit {
 
   getEstadoNome(cidade: Cidade): string {
     return typeof cidade.estado === 'object' && cidade.estado ? cidade.estado.nome : '-';
+  }
+
+  voltar(): void {
+    this.location.back();
   }
 }

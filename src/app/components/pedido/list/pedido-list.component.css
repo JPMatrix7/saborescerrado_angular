@@ -1,0 +1,149 @@
+mat-card {
+  margin: 20px;
+}
+
+.pedidos-container {
+  margin-top: 20px;
+}
+
+.pedido-panel {
+  margin-bottom: 16px;
+}
+
+.panel-title-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.pedido-id {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.panel-description-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: flex-end;
+}
+
+.valor-total {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 16px;
+}
+
+.pedido-details {
+  padding: 16px 0;
+}
+
+.info-section,
+.itens-section {
+  margin-bottom: 24px;
+}
+
+.info-section h4,
+.itens-section h4 {
+  margin-bottom: 12px;
+  color: #424242;
+  font-weight: 500;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item strong {
+  color: #666;
+  font-size: 14px;
+}
+
+.info-item span {
+  color: #212121;
+  font-size: 15px;
+}
+
+.itens-table {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.total-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.total-section strong {
+  font-size: 18px;
+  color: #424242;
+}
+
+.total-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.actions-section {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.no-pedidos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #9e9e9e;
+}
+
+.no-pedidos mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+.no-pedidos p {
+  font-size: 18px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .panel-description-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-section {
+    flex-direction: column;
+  }
+
+  .actions-section button {
+    width: 100%;
+  }
+}

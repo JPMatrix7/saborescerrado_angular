@@ -10,12 +10,15 @@ import { EstadoListComponent } from './components/estado/list/estado-list.compon
 import { EstadoFormComponent } from './components/estado/form/estado-form.component';
 import { CidadeListComponent } from './components/cidade/list/cidade-list.component';
 import { CidadeFormComponent } from './components/cidade/form/cidade-form.component';
+import { UsuarioListComponent } from './components/usuario/list/usuario-list.component';
+import { UsuarioFormComponent } from './components/usuario/form/usuario-form.component';
+import { PedidoListComponent } from './components/pedido/list/pedido-list.component';
 import { AdminTemplateComponent } from './components/template/admin-template.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/admin/home', pathMatch: 'full' },
   
-  // Rotas com template administrativo
+  // Rotas com template administrativo (sem proteção de guards)
   {
     path: 'admin',
     component: AdminTemplateComponent,
@@ -46,6 +49,14 @@ export const routes: Routes = [
       { path: 'cidades', component: CidadeListComponent },
       { path: 'cidades/form', component: CidadeFormComponent },
       { path: 'cidades/form/:id', component: CidadeFormComponent },
+      
+      // Rotas de Usuários
+      { path: 'usuarios', component: UsuarioListComponent },
+      { path: 'usuarios/form', component: UsuarioFormComponent },
+      { path: 'usuarios/form/:id', component: UsuarioFormComponent },
+      
+      // Rotas de Pedidos
+      { path: 'pedidos', component: PedidoListComponent },
     ]
   }
 ];

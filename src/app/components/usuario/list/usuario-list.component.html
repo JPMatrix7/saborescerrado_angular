@@ -1,0 +1,92 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button mat-icon-button (click)="voltar()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span>Usuários</span>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="navigateToForm()">
+        <mat-icon>add</mat-icon>
+        Novo Usuário
+      </button>
+    </div>
+
+    <table mat-table [dataSource]="usuarios()" class="mat-elevation-z8">
+      
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let usuario">{{ usuario.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nomeCompleto">
+        <th mat-header-cell *matHeaderCellDef>Nome Completo</th>
+        <td mat-cell *matCellDef="let usuario">{{ usuario.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>E-mail</th>
+        <td mat-cell *matCellDef="let usuario">{{ usuario.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cpf">
+        <th mat-header-cell *matHeaderCellDef>CPF</th>
+        <td mat-cell *matCellDef="let usuario">{{ formatCpf(usuario.cpf) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="perfil">
+        <th mat-header-cell *matHeaderCellDef>Perfil</th>
+        <td mat-cell *matCellDef="let usuario">
+          <mat-chip [color]="getPerfilColor(usuario.perfis)" highlighted>
+            {{ getPerfilLabel(usuario.perfis) }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let usuario">
+          <mat-chip [color]="getStatusColor(usuario.ativo)" highlighted>
+            {{ getStatusLabel(usuario.ativo) }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dataInclusao">
+        <th mat-header-cell *matHeaderCellDef>Data Cadastro</th>
+        <td mat-cell *matCellDef="let usuario">{{ formatData(usuario.datainclusao) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let usuario">
+          <button mat-icon-button color="primary" (click)="navigateToForm(usuario.id)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteUsuario(usuario.id!, usuario.nome)" matTooltip="Desativar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Paginação -->
+    <mat-paginator 
+      [length]="totalElements()"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>
