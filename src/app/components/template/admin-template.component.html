@@ -1,0 +1,114 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar Menu -->
+  <mat-sidenav #sidenav mode="side" [opened]="menuOpen()">
+    <div class="sidenav-header" (click)="navigateTo('/admin/home')" style="cursor: pointer;">
+      <mat-icon class="logo-icon">liquor</mat-icon>
+      <h2>Sabores do Cerrado</h2>
+    </div>
+    
+    <nav class="sidenav-nav">
+      <button mat-button class="nav-item" (click)="navigateTo('/admin/home')">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </button>
+      
+      <div class="nav-section">
+        <p class="nav-section-title">Cadastros</p>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/produtos')">
+          <mat-icon>inventory</mat-icon>
+          <span>Produtos</span>
+        </button>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/categorias')">
+          <mat-icon>category</mat-icon>
+          <span>Categorias</span>
+        </button>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/fornecedores')">
+          <mat-icon>business</mat-icon>
+          <span>Fornecedores</span>
+        </button>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/clientes')">
+          <mat-icon>people</mat-icon>
+          <span>Clientes</span>
+        </button>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/pedidos')">
+          <mat-icon>shopping_cart</mat-icon>
+          <span>Pedidos</span>
+        </button>
+      </div>
+      
+      <div class="nav-section">
+        <p class="nav-section-title">Localização</p>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/estados')">
+          <mat-icon>map</mat-icon>
+          <span>Estados</span>
+        </button>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/cidades')">
+          <mat-icon>location_city</mat-icon>
+          <span>Cidades</span>
+        </button>
+      </div>
+      
+      <div class="nav-section">
+        <p class="nav-section-title">Configurações</p>
+        
+        <button mat-button class="nav-item" (click)="navigateTo('/admin/usuarios')">
+          <mat-icon>manage_accounts</mat-icon>
+          <span>Usuários</span>
+        </button>
+      </div>
+    </nav>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <!-- Header -->
+    <mat-toolbar color="primary" class="admin-toolbar">
+      <button mat-icon-button (click)="toggleMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <span class="title" (click)="navigateTo('/admin/home')" style="cursor: pointer;">Administrativo</span>
+      <span class="spacer"></span>
+      
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Perfil</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Configurações</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item>
+          <mat-icon>logout</mat-icon>
+          <span>Sair</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Page Content -->
+    <div class="content-wrapper">
+      <router-outlet />
+    </div>
+
+    <!-- Footer -->
+    <footer class="admin-footer">
+      <div class="footer-content">
+        <p>&copy; {{ currentYear }} Sabores do Cerrado - Todos os direitos reservados</p>
+        <p class="footer-version">Versão 1.0.0 | Painel Administrativo</p>
+      </div>
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

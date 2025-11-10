@@ -1,0 +1,96 @@
+<div class="home-container">
+  <div class="header">
+    <h1>🍷 Sabores do Cerrado</h1>
+    <p>Sistema de Gerenciamento de E-commerce de Licores</p>
+  </div>
+
+  <!-- Gráficos de Estatísticas -->
+  <div class="stats-grid">
+    <!-- Gráfico 1: Total de Produtos -->
+    <mat-card class="stats-card">
+      <mat-card-header>
+        <div class="stats-header">
+          <mat-icon class="stats-icon products-icon">inventory</mat-icon>
+          <h3>Total de Produtos</h3>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-number">{{ totalProdutos() }}</div>
+          <p class="stats-label">Licores cadastrados</p>
+          
+          <div class="stats-details">
+            <h4>Por Categoria</h4>
+            <div class="category-list" *ngIf="categoriasTop().length > 0; else noCategorias">
+              <div *ngFor="let cat of categoriasTop()" class="category-item">
+                <span class="category-name">{{ cat.nome }}</span>
+                <span class="category-count">{{ cat.quantidade }}</span>
+              </div>
+            </div>
+            <ng-template #noCategorias>
+              <p style="text-align: center; opacity: 0.7; padding: 16px;">
+                Nenhuma categoria cadastrada
+              </p>
+            </ng-template>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="navigate('/admin/produtos')">
+          Ver Todos
+        </button>
+      </mat-card-actions>
+    </mat-card>
+    
+    <!-- Gráfico 2: Total de Usuários -->
+    <mat-card class="stats-card">
+      <mat-card-header>
+        <div class="stats-header">
+          <mat-icon class="stats-icon users-icon">people</mat-icon>
+          <h3>Total de Usuários</h3>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-number">{{ totalUsuarios() }}</div>
+          <p class="stats-label">Usuários no sistema</p>
+          
+          <div class="stats-details">
+            <h4>Por Perfil</h4>
+            <div class="category-list">
+              <div *ngFor="let user of usuariosPorPerfil" class="category-item">
+                <span class="category-name">{{ user.perfil }}</span>
+                <span class="category-count">{{ user.quantidade }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="navigate('/admin/clientes')">
+          Ver Todos
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Menu de Navegação Rápida -->
+  <h2 class="section-title">Acesso Rápido</h2>
+  <div class="menu-grid">
+    <mat-card *ngFor="let item of menuItems" class="menu-card" (click)="navigate(item.route)">
+      <mat-card-header>
+        <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.description }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary">
+          Acessar
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

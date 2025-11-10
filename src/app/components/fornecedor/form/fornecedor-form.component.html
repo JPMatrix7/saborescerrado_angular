@@ -1,0 +1,49 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Editar Fornecedor' : 'Novo Fornecedor' }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="fornecedorForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Razão Social</mat-label>
+        <input matInput formControlName="razaoSocial" required>
+        <mat-error *ngIf="fornecedorForm.get('razaoSocial')?.hasError('required')">
+          Razão Social é obrigatória
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome Fantasia</mat-label>
+        <input matInput formControlName="nomeFantasia" required>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>CNPJ</mat-label>
+          <input matInput formControlName="cnpj" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telefone</mat-label>
+          <input matInput formControlName="telefone" required>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" required>
+        <mat-error *ngIf="fornecedorForm.get('email')?.hasError('email')">
+          Email inválido
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button type="button" (click)="onCancel()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!fornecedorForm.valid">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

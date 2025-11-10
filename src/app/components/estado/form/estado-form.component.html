@@ -1,0 +1,38 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Editar Estado' : 'Novo Estado' }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="estadoForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome" required>
+        <mat-error *ngIf="estadoForm.get('nome')?.hasError('required')">
+          Nome é obrigatório
+        </mat-error>
+        <mat-error *ngIf="estadoForm.get('nome')?.hasError('minlength')">
+          Nome deve ter no mínimo 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Sigla</mat-label>
+        <input matInput formControlName="sigla" required maxlength="2" style="text-transform: uppercase">
+        <mat-error *ngIf="estadoForm.get('sigla')?.hasError('required')">
+          Sigla é obrigatória
+        </mat-error>
+        <mat-error *ngIf="estadoForm.get('sigla')?.hasError('minlength') || estadoForm.get('sigla')?.hasError('maxlength')">
+          Sigla deve ter exatamente 2 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button type="button" (click)="onCancel()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!estadoForm.valid">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

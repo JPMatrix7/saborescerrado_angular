@@ -1,0 +1,47 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Estados</mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="navigateToForm()">
+        <mat-icon>add</mat-icon>
+        Novo Estado
+      </button>
+    </div>
+
+    <table mat-table [dataSource]="estados()" class="mat-elevation-z8">
+      
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let estado">{{ estado.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let estado">{{ estado.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sigla">
+        <th mat-header-cell *matHeaderCellDef>Sigla</th>
+        <td mat-cell *matCellDef="let estado">{{ estado.sigla }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let estado">
+          <button mat-icon-button color="primary" (click)="navigateToForm(estado.id)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteEstado(estado.id!)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
