@@ -1,0 +1,164 @@
+<section id="hero" class="hero">
+  <div class="hero-content">
+    <p class="hero-chip">Colecoes autorais do Cerrado</p>
+    <h1>Experimente licores criados com ingredientes nativos e memorias afetivas.</h1>
+    <p class="hero-subtitle">
+      Resgatamos tradicoes centenarias em pequenos lotes, com rastreabilidade e tecnicas de
+      maturacao inspiradas na coquetelaria brasileira.
+    </p>
+    <div class="hero-actions">
+      <a routerLink="/produtos" class="primary-button">Explorar produtos</a>
+      <a routerLink="/produtos" fragment="kit-degustacao" class="ghost-button">Ver kits degustacao</a>
+    </div>
+    <div class="hero-metrics">
+      <div *ngFor="let metric of metrics">
+        <p class="metric-value">{{ metric.value }}</p>
+        <p class="metric-label">{{ metric.label }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-showcase">
+    <div class="hero-card">
+      <p class="card-tag">Blend autoral</p>
+      <h3>Licor de Pequi &amp; Cumaru</h3>
+      <p>Textura sedosa, especiarias doces e final citrico.</p>
+      <div class="card-footer">
+        <span>Safra 2024</span>
+        <span>Batch #042</span>
+      </div>
+    </div>
+    <div class="hero-card secondary">
+      <p class="card-tag">Degustacao guiada</p>
+      <h3>Experiencia raizes do Cerrado</h3>
+      <p>Assinada pela nossa mestre licoreira.</p>
+      <a routerLink="/produtos" class="link-button">Agendar</a>
+    </div>
+  </div>
+</section>
+
+<section class="featured-carousel" aria-label="Produtos em destaque">
+  <header>
+    <p class="section-chip">Produtos em destaque</p>
+    <h2>Carrossel de lancamentos e series especiais</h2>
+    <p>Descubra sabores premiados e selecoes limitadas.</p>
+  </header>
+
+  <div class="carousel-wrapper">
+    <button class="carousel-nav prev" type="button" (click)="prevSlide()" aria-label="Anterior">
+      &#10094;
+    </button>
+    <div class="carousel-track" [style.transform]="'translateX(-' + activeSlide() * 100 + '%)'">
+      <article class="carousel-card" *ngFor="let product of featuredProducts">
+        <div class="card-header">
+          <p class="tag">{{ product.tag }}</p>
+          <p class="rating">&#9733; {{ formatRating(product.rating) }}</p>
+        </div>
+        <h3>{{ product.title }}</h3>
+        <p>{{ product.description }}</p>
+        <div class="card-actions">
+          <p class="price">{{ product.price }}</p>
+          <a routerLink="/produtos" class="ghost-button">Detalhes</a>
+        </div>
+      </article>
+    </div>
+    <button class="carousel-nav next" type="button" (click)="nextSlide()" aria-label="Proximo">
+      &#10095;
+    </button>
+  </div>
+
+  <div class="carousel-dots">
+    <button
+      *ngFor="let product of featuredProducts; index as index"
+      (click)="goToSlide(index)"
+      [class.active]="activeSlide() === index"
+      type="button"
+      aria-label="Ir para destaque {{ index + 1 }}"
+    ></button>
+  </div>
+</section>
+
+<section id="categorias" class="category-grid">
+  <header>
+    <p class="section-chip">Categorias</p>
+    <h2>Selecoes curadas para todos os paladares</h2>
+  </header>
+  <div class="grid">
+    <article class="category-card" *ngFor="let category of categories" [style.background]="category.color">
+      <p class="tag">{{ category.label }}</p>
+      <h3>{{ category.description }}</h3>
+      <a routerLink="/produtos" class="link-button">Ver colecao</a>
+    </article>
+  </div>
+</section>
+
+<section id="sobre" class="about-section">
+  <div class="about-content">
+    <p class="section-chip">Sobre a casa</p>
+    <h2>Uma casa licoreira dedicada ao Cerrado</h2>
+    <p>
+      Selecionamos frutas, meles e especiarias de comunidades extrativistas e produtores parceiros.
+      Cada safra passa por maturacao controlada e analise sensorial ate conquistar o equilibrio ideal.
+    </p>
+    <ul>
+      <li>Parcerias com cooperativas de agricultura regenerativa.</li>
+      <li>Controle sensorial em seis etapas antes do envase.</li>
+      <li>Rastreabilidade total das garrafas numeradas.</li>
+    </ul>
+    <div class="about-actions">
+      <a routerLink="/produtos" class="primary-button">Ver catalogo completo</a>
+      <a routerLink="/produtos" fragment="kits" class="ghost-button">Conhecer kits corporativos</a>
+    </div>
+  </div>
+
+  <div class="about-panel">
+    <div class="panel-card">
+      <p class="metric">92 pts</p>
+      <p>Guia Nacional de Licores 2024</p>
+    </div>
+    <div class="panel-card">
+      <p class="metric">Top 3</p>
+      <p>Premiacao Brasil Spirits</p>
+    </div>
+    <div class="panel-card">
+      <p class="metric">100%</p>
+      <p>Origem rastreada</p>
+    </div>
+  </div>
+</section>
+
+<section id="depoimentos" class="testimonial-section">
+  <header>
+    <p class="section-chip">Avaliacoes reais</p>
+    <h2>Depoimentos de quem vive a experiencia Sabores do Cerrado</h2>
+  </header>
+
+  <div class="testimonial-grid">
+    <article class="testimonial-card" *ngFor="let testimonial of testimonials">
+      <p class="rating">&#9733; {{ testimonial.rating }}</p>
+      <p class="comment">&ldquo;{{ testimonial.comment }}&rdquo;</p>
+      <p class="author">{{ testimonial.name }} &middot; {{ testimonial.city }}</p>
+    </article>
+  </div>
+</section>
+
+<section class="newsletter">
+  <div class="newsletter-card">
+    <p class="section-chip">Newsletter</p>
+    <h2>Receba lotes antecipados e convites para degustacoes exclusivas</h2>
+    <form (submit)="$event.preventDefault(); subscribeNewsletter();">
+      <div class="input-group">
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="newsletterEmail"
+          placeholder="seuemail@email.com"
+          autocomplete="email"
+        />
+        <button type="submit" class="primary-button">Assinar</button>
+      </div>
+      <p class="feedback" *ngIf="newsletterFeedback">{{ newsletterFeedback }}</p>
+      <p class="disclaimer">Sem spam. Apenas novidades saborosas.</p>
+    </form>
+  </div>
+</section>

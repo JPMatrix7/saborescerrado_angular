@@ -1,0 +1,70 @@
+<header class="visitor-header">
+  <div class="branding">
+    <a routerLink="/" class="logo" (click)="closeMenu()">Sabores do Cerrado</a>
+    <p class="tagline">Licores artesanais inspirados no Cerrado</p>
+  </div>
+
+  <nav class="desktop-nav">
+    <a
+      *ngFor="let link of navigation"
+      class="nav-link"
+      routerLinkActive="active"
+      [routerLink]="link.route"
+      [fragment]="link.fragment"
+      (click)="closeMenu()"
+    >
+      {{ link.label }}
+    </a>
+  </nav>
+
+  <div class="header-actions">
+    <a class="ghost-button" routerLink="/produtos" (click)="closeMenu()">Catalogo</a>
+    <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Compre agora</a>
+    <button class="menu-icon" type="button" (click)="toggleMenu()" aria-label="Abrir menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" [class.open]="menuOpen()">
+  <nav>
+    <a
+      *ngFor="let link of navigation"
+      class="nav-link"
+      routerLinkActive="active"
+      [routerLink]="link.route"
+      [fragment]="link.fragment"
+      (click)="closeMenu()"
+    >
+      {{ link.label }}
+    </a>
+    <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Ver produtos</a>
+  </nav>
+</div>
+
+<main class="visitor-content">
+  <router-outlet />
+</main>
+
+<footer class="visitor-footer">
+  <div class="footer-grid">
+    <div>
+      <p class="logo">Sabores do Cerrado</p>
+      <p>Sabores autenticos inspirados no bioma brasileiro.</p>
+    </div>
+    <div>
+      <p class="footer-heading">Visite</p>
+      <a routerLink="/produtos">Lancamentos</a>
+      <a routerLink="/produtos">Colecao classica</a>
+      <a routerLink="/produtos">Edicoes limitadas</a>
+    </div>
+    <div>
+      <p class="footer-heading">Contato</p>
+      <p>atendimento@saboresdocerrado.com</p>
+      <p>(61) 4000-2025</p>
+    </div>
+  </div>
+  <p class="copyright">&copy; {{ currentYear }} Sabores do Cerrado. Todos os direitos reservados.</p>
+</footer>

@@ -16,54 +16,47 @@ import { PedidoListComponent } from './components/pedido/list/pedido-list.compon
 import { SaborListComponent } from './components/sabor/list/sabor-list.component';
 import { SaborFormComponent } from './components/sabor/form/sabor-form.component';
 import { AdminTemplateComponent } from './components/template/admin-template.component';
+import { VisitanteTemplateComponent } from './components/visitante/template/visitante-template.component';
+import { VisitanteHomeComponent } from './components/visitante/home/visitante-home.component';
+import { VisitanteProductsComponent } from './components/visitante/produtos/visitante-products.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/admin/home', pathMatch: 'full' },
-  
-  // Rotas com template administrativo (sem proteção de guards)
+  {
+    path: '',
+    component: VisitanteTemplateComponent,
+    children: [
+      { path: '', component: VisitanteHomeComponent },
+      { path: 'produtos', component: VisitanteProductsComponent }
+    ]
+  },
   {
     path: 'admin',
     component: AdminTemplateComponent,
     children: [
       { path: 'home', component: HomeComponent },
-      
-      // Rotas de Produtos
       { path: 'produtos', component: ProdutoListComponent },
       { path: 'produtos/form', component: ProdutoFormComponent },
       { path: 'produtos/form/:id', component: ProdutoFormComponent },
-      
-      // Rotas de Categorias
       { path: 'categorias', component: CategoriaListComponent },
       { path: 'categorias/form', component: CategoriaFormComponent },
       { path: 'categorias/form/:id', component: CategoriaFormComponent },
-      
-      // Rotas de Fornecedores
       { path: 'fornecedores', component: FornecedorListComponent },
       { path: 'fornecedores/form', component: FornecedorFormComponent },
       { path: 'fornecedores/form/:id', component: FornecedorFormComponent },
-      
-      // Rotas de Estados
       { path: 'estados', component: EstadoListComponent },
       { path: 'estados/form', component: EstadoFormComponent },
       { path: 'estados/form/:id', component: EstadoFormComponent },
-      
-      // Rotas de Cidades
       { path: 'cidades', component: CidadeListComponent },
       { path: 'cidades/form', component: CidadeFormComponent },
       { path: 'cidades/form/:id', component: CidadeFormComponent },
-      
-      // Rotas de Usuários
       { path: 'usuarios', component: UsuarioListComponent },
       { path: 'usuarios/form', component: UsuarioFormComponent },
       { path: 'usuarios/form/:id', component: UsuarioFormComponent },
-      
-      // Rotas de Pedidos
       { path: 'pedidos', component: PedidoListComponent },
-      
-      // Rotas de Sabores
       { path: 'sabores', component: SaborListComponent },
       { path: 'sabores/form', component: SaborFormComponent },
-      { path: 'sabores/form/:id', component: SaborFormComponent },
+      { path: 'sabores/form/:id', component: SaborFormComponent }
     ]
-  }
+  },
+  { path: '**', redirectTo: '' }
 ];
