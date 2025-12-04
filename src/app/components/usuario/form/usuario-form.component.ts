@@ -168,7 +168,8 @@ export class UsuarioFormComponent implements OnInit {
   onSubmit(): void {
     if (this.usuarioForm.valid) {
       // Remove formatação do CPF (apenas números)
-      const cpfSemFormatacao = this.usuarioForm.value.cpf.replace(/\D/g, '');
+      const cpfValor = this.usuarioForm.value.cpf || '';
+      const cpfSemFormatacao = cpfValor.replace(/\D/g, '');
       
       // Formata data para ISO 8601 (YYYY-MM-DD)
       const dataNascimento = new Date(this.usuarioForm.value.dataNascimento);

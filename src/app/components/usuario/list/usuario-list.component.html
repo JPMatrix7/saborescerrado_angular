@@ -69,8 +69,11 @@
           <button mat-icon-button color="primary" (click)="navigateToForm(usuario.id)" matTooltip="Editar">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteUsuario(usuario.id!, usuario.nome + ' ' + usuario.sobrenome)" matTooltip="Desativar">
-            <mat-icon>delete</mat-icon>
+          <button mat-icon-button
+                  [color]="usuario.ativo ? 'warn' : 'accent'"
+                  (click)="toggleUsuarioStatus(usuario)"
+                  [matTooltip]="usuario.ativo ? 'Desativar' : 'Ativar'">
+            <mat-icon>{{ usuario.ativo ? 'toggle_off' : 'toggle_on' }}</mat-icon>
           </button>
         </td>
       </ng-container>

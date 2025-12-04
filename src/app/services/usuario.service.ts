@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Usuario, PessoaFisica, PessoaFisicaDTO } from '../models/usuario.model';
+import { map } from 'rxjs/operators';
+import { Usuario, PessoaFisicaDTO } from '../models/usuario.model';
 import { Perfil } from '../models/enums.model';
 
 @Injectable({
@@ -14,12 +15,16 @@ export class UsuarioService {
 
   // Listar paginado
   getAll(page: number = 0, pageSize: number = 10): Observable<Usuario[]> {
-    return this.httpClient.get<Usuario[]>(`${this.baseUrl}/${page}/${pageSize}`);
+    return this.httpClient
+      .get<Usuario[]>(`${this.baseUrl}/${page}/${pageSize}`)
+      .pipe(map((usuarios) => usuarios.map((usuario) => this.normalizeUsuario(usuario))));
   }
 
   // Buscar por ID
   getById(id: number): Observable<Usuario> {
-    return this.httpClient.get<Usuario>(`${this.baseUrl}/id/${id}`);
+    return this.httpClient
+      .get<Usuario>(`${this.baseUrl}/id/${id}`)
+      .pipe(map((usuario) => this.normalizeUsuario(usuario)));
   }
 
   // Criar usuário
@@ -52,6 +57,13 @@ export class UsuarioService {
     return this.httpClient.patch<void>(`${this.baseUrl}/senha/${id}`, { senha });
   }
 
+  // Alternar status ativo/inativo
+  toggleStatus(id: number): Observable<Usuario> {
+    return this.httpClient
+      .patch<Usuario>(`${this.baseUrl}/status/${id}`, {})
+      .pipe(map((usuario) => this.normalizeUsuario(usuario)));
+  }
+
   // Deletar (soft delete)
   delete(id: number): Observable<void> {
     return this.httpClient.patch<void>(`${this.baseUrl}/delete/${id}`, {});
@@ -74,5 +86,22 @@ export class UsuarioService {
 
   findById(id: number): Observable<Usuario> {
     return this.getById(id);
+  }
+
+  private normalizeUsuario(usuario: Usuario): Usuario {
+    const cpfLimpo = (usuario.cpf || '').replace(/\D/g, '');
+
+    return {
+      ...usuario,
+      cpf: cpfLimpo,
+      perfis: usuario.perfis || [],
+      ativo: usuario.ativo ?? false,
+      dataInclusao: usuario.dataInclusao || '',
+      enderecos: usuario.enderecos || [],
+      cartoes: usuario.cartoes || [],
+      telefones: usuario.telefones || [],
+      favoritos: usuario.favoritos || [],
+      compras: usuario.compras || []
+    };
   }
 }

@@ -157,21 +157,32 @@ export class UsuarioListComponent implements OnInit {
     }
   }
 
-  deleteUsuario(id: number, nome: string): void {
-    if (confirm(`Tem certeza que deseja desativar o usuário "${nome}"?`)) {
-      console.log('Desativando usuário:', id);
-      this.usuarioService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Usuário desativado com sucesso!', 'OK', { duration: 3000 });
-          this.loadUsuarios();
-          this.loadTotal();
-        },
-        error: (error) => {
-          console.error('❌ Erro ao desativar usuário:', error);
-          this.snackBar.open('Erro ao desativar usuário', 'OK', { duration: 3000 });
-        }
-      });
+  toggleUsuarioStatus(usuario: Usuario): void {
+    if (!usuario.id) {
+      return;
     }
+
+    const action = usuario.ativo ? 'desativar' : 'ativar';
+    const fullName = (usuario.nome + ' ' + usuario.sobrenome).trim();
+    const confirmMessage = 'Tem certeza que deseja ' + action + ' o usuario "' + fullName + '"?';
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    this.usuarioService.toggleStatus(usuario.id).subscribe({
+      next: (updatedUsuario) => {
+        const successMessage = updatedUsuario.ativo
+          ? 'Usuario ativado com sucesso!'
+          : 'Usuario desativado com sucesso!';
+        this.snackBar.open(successMessage, 'OK', { duration: 3000 });
+        this.loadUsuarios();
+      },
+      error: (error) => {
+        console.error('Erro ao alternar status do usuario:', error);
+        this.snackBar.open('Nao foi possivel atualizar o status', 'OK', { duration: 3000 });
+      }
+    });
   }
 
   getPerfilLabel(perfis?: Perfil[]): string {
@@ -196,12 +207,6 @@ export class UsuarioListComponent implements OnInit {
 
   getStatusColor(ativo?: boolean): string {
     return ativo !== false ? 'accent' : 'warn';
-  }
-
-  formatCpf(cpf?: string): string {
-    if (!cpf) return '-';
-    // Formata CPF: 12345678901 -> 123.456.789-01
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
   formatData(data?: string): string {
