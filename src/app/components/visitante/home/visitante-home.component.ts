@@ -1,21 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+import { Categoria } from '../../../models/categoria.model';
+import { Licor } from '../../../models/licor.model';
+import { CategoriaService } from '../../../services/categoria.service';
+import { ProdutoService } from '../../../services/produto.service';
+import { fallbackImage } from '../shared/image-fallbacks';
 
 interface FeaturedProduct {
+  id?: number;
   title: string;
   description: string;
   tag: string;
   image: string;
   rating: number;
-  price: string;
 }
 
 interface CategoryCard {
+  id?: number;
   label: string;
   description: string;
-  image: string;
   color: string;
 }
 
@@ -29,67 +35,16 @@ interface Testimonial {
 @Component({
   selector: 'app-visitante-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './visitante-home.component.html',
   styleUrl: './visitante-home.component.css'
 })
 export class VisitanteHomeComponent implements OnInit, OnDestroy {
-  protected activeSlide = signal(0);
-  protected readonly featuredProducts: FeaturedProduct[] = [
-    {
-      title: 'Licor de Buriti Safra Especial',
-      description: 'Notas tropicais, textura macia e final citrico.',
-      tag: 'Safra limitada',
-      image: 'assets/landing/buriti.png',
-      rating: 5,
-      price: 'R$ 129'
-    },
-    {
-      title: 'Licor de Baru & Especiarias',
-      description: 'Combina textura amanteigada e especiarias aquecidas.',
-      tag: 'Favorito dos clientes',
-      image: 'assets/landing/baru.png',
-      rating: 4.8,
-      price: 'R$ 98'
-    },
-    {
-      title: 'Colecao Mel do Cerrado',
-      description: 'Blend exclusivo com mel silvestre e carvalho tostado.',
-      tag: 'Novo lote',
-      image: 'assets/landing/mel.png',
-      rating: 4.9,
-      price: 'R$ 149'
-    }
-  ];
+  readonly activeSlide = signal(0);
+  featuredProducts: FeaturedProduct[] = [];
+  categories: CategoryCard[] = [];
 
-  protected readonly categories: CategoryCard[] = [
-    {
-      label: 'Colecao Safra',
-      description: 'Rotulos numerados de colheitas raras.',
-      image: 'assets/landing/safra.jpg',
-      color: '#feedda'
-    },
-    {
-      label: 'Frutados',
-      description: 'Buriti, pequi e frutos do Cerrado.',
-      image: 'assets/landing/frutados.jpg',
-      color: '#ffe9ef'
-    },
-    {
-      label: 'Mel & Florais',
-      description: 'Texturas doces com final elegante.',
-      image: 'assets/landing/mel-floral.jpg',
-      color: '#eaf6ff'
-    },
-    {
-      label: 'Edicoes limitadas',
-      description: 'Parcerias com chefs e mixologistas.',
-      image: 'assets/landing/limitada.jpg',
-      color: '#f0f3fb'
-    }
-  ];
-
-  protected readonly testimonials: Testimonial[] = [
+  readonly testimonials: Testimonial[] = [
     {
       name: 'Marina Figueiredo',
       city: 'Brasilia - DF',
@@ -110,55 +65,67 @@ export class VisitanteHomeComponent implements OnInit, OnDestroy {
     }
   ];
 
-  protected readonly metrics = [
+  readonly metrics = [
     { value: '10+', label: 'anos de pesquisa' },
     { value: '25', label: 'produtores parceiros' },
     { value: '40k', label: 'garrafas por ano' },
     { value: '4.9', label: 'avaliacao media' }
   ];
 
-  protected newsletterEmail = '';
-  protected newsletterFeedback = '';
   private slideInterval?: ReturnType<typeof setInterval>;
+  private readonly subscriptions = new Subscription();
+
+  constructor(
+    private readonly produtoService: ProdutoService,
+    private readonly categoriaService: CategoriaService
+  ) {}
 
   ngOnInit(): void {
-    this.startCarousel();
+    this.carregarProdutosEmDestaque();
+    this.carregarCategorias();
   }
 
   ngOnDestroy(): void {
     this.stopCarousel();
+    this.subscriptions.unsubscribe();
   }
 
   nextSlide(): void {
+    if (!this.featuredProducts.length) {
+      return;
+    }
+
     this.activeSlide.update(index => (index + 1) % this.featuredProducts.length);
   }
 
   prevSlide(): void {
+    if (!this.featuredProducts.length) {
+      return;
+    }
+
     this.activeSlide.update(index =>
       index === 0 ? this.featuredProducts.length - 1 : index - 1
     );
   }
 
   goToSlide(index: number): void {
+    if (!this.featuredProducts.length) {
+      return;
+    }
+
     this.activeSlide.set(index);
     this.restartCarousel();
   }
 
-  subscribeNewsletter(): void {
-    if (!this.newsletterEmail.trim()) {
-      this.newsletterFeedback = 'Informe um e-mail valido para receber novidades.';
-      return;
-    }
-
-    this.newsletterFeedback = 'Obrigado! Voce recebera nossas novidades em breve.';
-    this.newsletterEmail = '';
-  }
-
-  protected formatRating(value: number): string {
-    return value.toFixed(1).replace('.0', '');
+  formatRating(value: number): string {
+    return value ? value.toFixed(1).replace('.0', '') : '0';
   }
 
   private startCarousel(): void {
+    if (this.featuredProducts.length < 2) {
+      return;
+    }
+
     this.slideInterval = setInterval(() => this.nextSlide(), 5000);
   }
 
@@ -171,5 +138,67 @@ export class VisitanteHomeComponent implements OnInit, OnDestroy {
   private restartCarousel(): void {
     this.stopCarousel();
     this.startCarousel();
+  }
+
+  private carregarProdutosEmDestaque(): void {
+    const subscription = this.produtoService.getVisiveis().subscribe({
+      next: licores => {
+        this.featuredProducts = licores.map((licor, index) => this.mapLicorParaCard(licor, index));
+        this.activeSlide.set(0);
+        this.restartCarousel();
+      },
+      error: () => {
+        this.featuredProducts = [];
+        this.stopCarousel();
+      }
+    });
+
+    this.subscriptions.add(subscription);
+  }
+
+  private carregarCategorias(): void {
+    const subscription = this.categoriaService.findAll().subscribe({
+      next: categorias => {
+        this.categories = categorias.map((categoria, index) =>
+          this.mapCategoriaParaCard(categoria, index)
+        );
+      },
+      error: () => {
+        this.categories = [];
+      }
+    });
+
+    this.subscriptions.add(subscription);
+  }
+
+  private mapLicorParaCard(licor: Licor, index: number): FeaturedProduct {
+    return {
+      id: licor.id,
+      title: licor.nome,
+      description: licor.descricao ?? 'Descricao indisponivel no momento.',
+      tag: licor.categorias && licor.categorias.length ? licor.categorias[0].nome : 'Licor artesanal',
+      image: licor.imagens && licor.imagens.length ? licor.imagens[0] : fallbackImage(index),
+      rating: licor.estrelas ?? this.calcularNotaMedia(licor)
+    };
+  }
+
+  private calcularNotaMedia(licor: Licor): number {
+    if (!licor.avaliacoes?.length) {
+      return 0;
+    }
+
+    const soma = licor.avaliacoes.reduce((total, avaliacao) => total + (avaliacao.estrelas ?? 0), 0);
+    return soma / licor.avaliacoes.length;
+  }
+
+  private mapCategoriaParaCard(categoria: Categoria, index: number): CategoryCard {
+    const palette = ['#feedda', '#ffe9ef', '#eaf6ff', '#f0f3fb'];
+
+    return {
+      id: categoria.id,
+      label: categoria.nome,
+      description: categoria.descricao ?? 'Atualize a categoria para descrever o publico.',
+      color: palette[index % palette.length]
+    };
   }
 }

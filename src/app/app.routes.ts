@@ -19,6 +19,7 @@ import { AdminTemplateComponent } from './components/template/admin-template.com
 import { VisitanteTemplateComponent } from './components/visitante/template/visitante-template.component';
 import { VisitanteHomeComponent } from './components/visitante/home/visitante-home.component';
 import { VisitanteProductsComponent } from './components/visitante/produtos/visitante-products.component';
+import { VisitanteProductDetailComponent } from './components/visitante/produtos/visitante-product-detail.component';
 
 export const routes: Routes = [
   {
@@ -26,7 +27,8 @@ export const routes: Routes = [
     component: VisitanteTemplateComponent,
     children: [
       { path: '', component: VisitanteHomeComponent },
-      { path: 'produtos', component: VisitanteProductsComponent }
+      { path: 'produtos', component: VisitanteProductsComponent },
+      { path: 'produtos/:id', component: VisitanteProductDetailComponent }
     ]
   },
   {

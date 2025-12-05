@@ -18,22 +18,16 @@
     </div>
   </div>
 
-  <div class="hero-showcase">
-    <div class="hero-card">
-      <p class="card-tag">Blend autoral</p>
-      <h3>Licor de Pequi &amp; Cumaru</h3>
-      <p>Textura sedosa, especiarias doces e final citrico.</p>
-      <div class="card-footer">
-        <span>Safra 2024</span>
-        <span>Batch #042</span>
-      </div>
-    </div>
-    <div class="hero-card secondary">
-      <p class="card-tag">Degustacao guiada</p>
-      <h3>Experiencia raizes do Cerrado</h3>
-      <p>Assinada pela nossa mestre licoreira.</p>
-      <a routerLink="/produtos" class="link-button">Agendar</a>
-    </div>
+  <div class="hero-visual">
+    <p class="hero-chip secondary">Catalogo conectado ao backend</p>
+    <h3>Todos os destaques sao carregados via API em tempo real.</h3>
+    <p>
+      Ao integrar com o backend voce garante disponibilidade, precos e imagens consistentes em todo o
+      ecossistema.
+    </p>
+    <p class="hero-helper">
+      Ajuste o endpoint diretamente no componente para apontar para o ambiente desejado.
+    </p>
   </div>
 </section>
 
@@ -44,12 +38,24 @@
     <p>Descubra sabores premiados e selecoes limitadas.</p>
   </header>
 
-  <div class="carousel-wrapper">
-    <button class="carousel-nav prev" type="button" (click)="prevSlide()" aria-label="Anterior">
+  <div class="carousel-wrapper" *ngIf="featuredProducts.length; else emptyFeatured">
+    <button
+      class="carousel-nav prev"
+      type="button"
+      (click)="prevSlide()"
+      aria-label="Anterior"
+      [disabled]="featuredProducts.length <= 1"
+    >
       &#10094;
     </button>
     <div class="carousel-track" [style.transform]="'translateX(-' + activeSlide() * 100 + '%)'">
       <article class="carousel-card" *ngFor="let product of featuredProducts">
+        <div class="card-media" [class.placeholder]="!product.image">
+          <img *ngIf="product.image; else imagePlaceholder" [src]="product.image" [alt]="product.title" />
+          <ng-template #imagePlaceholder>
+            <span>Imagem pendente via API</span>
+          </ng-template>
+        </div>
         <div class="card-header">
           <p class="tag">{{ product.tag }}</p>
           <p class="rating">&#9733; {{ formatRating(product.rating) }}</p>
@@ -57,17 +63,36 @@
         <h3>{{ product.title }}</h3>
         <p>{{ product.description }}</p>
         <div class="card-actions">
-          <p class="price">{{ product.price }}</p>
-          <a routerLink="/produtos" class="ghost-button">Detalhes</a>
+          <a
+            *ngIf="product.id; else cadastroIncompleto"
+            class="ghost-button"
+            [routerLink]="['/produtos', product.id]"
+            >Detalhes</a
+          >
+          <ng-template #cadastroIncompleto>
+            <span class="card-warning">Associe um ID para habilitar o detalhe.</span>
+          </ng-template>
         </div>
       </article>
     </div>
-    <button class="carousel-nav next" type="button" (click)="nextSlide()" aria-label="Proximo">
+    <button
+      class="carousel-nav next"
+      type="button"
+      (click)="nextSlide()"
+      aria-label="Proximo"
+      [disabled]="featuredProducts.length <= 1"
+    >
       &#10095;
     </button>
   </div>
 
-  <div class="carousel-dots">
+  <ng-template #emptyFeatured>
+    <div class="empty-state">
+      <p>Conecte o endpoint de destaques para exibir os produtos do backend aqui.</p>
+    </div>
+  </ng-template>
+
+  <div class="carousel-dots" *ngIf="featuredProducts.length > 1">
     <button
       *ngFor="let product of featuredProducts; index as index"
       (click)="goToSlide(index)"
@@ -83,13 +108,18 @@
     <p class="section-chip">Categorias</p>
     <h2>Selecoes curadas para todos os paladares</h2>
   </header>
-  <div class="grid">
+  <div class="grid" *ngIf="categories.length; else categoriasPlaceholder">
     <article class="category-card" *ngFor="let category of categories" [style.background]="category.color">
       <p class="tag">{{ category.label }}</p>
       <h3>{{ category.description }}</h3>
       <a routerLink="/produtos" class="link-button">Ver colecao</a>
     </article>
   </div>
+  <ng-template #categoriasPlaceholder>
+    <div class="empty-state">
+      <p>As categorias serao exibidas assim que voce integrar o endpoint correspondente.</p>
+    </div>
+  </ng-template>
 </section>
 
 <section id="sobre" class="about-section">
@@ -103,7 +133,6 @@
     <ul>
       <li>Parcerias com cooperativas de agricultura regenerativa.</li>
       <li>Controle sensorial em seis etapas antes do envase.</li>
-      <li>Rastreabilidade total das garrafas numeradas.</li>
     </ul>
     <div class="about-actions">
       <a routerLink="/produtos" class="primary-button">Ver catalogo completo</a>
@@ -139,26 +168,5 @@
       <p class="comment">&ldquo;{{ testimonial.comment }}&rdquo;</p>
       <p class="author">{{ testimonial.name }} &middot; {{ testimonial.city }}</p>
     </article>
-  </div>
-</section>
-
-<section class="newsletter">
-  <div class="newsletter-card">
-    <p class="section-chip">Newsletter</p>
-    <h2>Receba lotes antecipados e convites para degustacoes exclusivas</h2>
-    <form (submit)="$event.preventDefault(); subscribeNewsletter();">
-      <div class="input-group">
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="newsletterEmail"
-          placeholder="seuemail@email.com"
-          autocomplete="email"
-        />
-        <button type="submit" class="primary-button">Assinar</button>
-      </div>
-      <p class="feedback" *ngIf="newsletterFeedback">{{ newsletterFeedback }}</p>
-      <p class="disclaimer">Sem spam. Apenas novidades saborosas.</p>
-    </form>
   </div>
 </section>

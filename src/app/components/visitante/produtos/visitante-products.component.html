@@ -1,9 +1,9 @@
 <section class="catalog-hero">
   <p class="section-chip">Catalogo aberto</p>
-  <h1>Licores autorais para degustar, colecionar ou presentear</h1>
+  <h1>Licores autorais conectados diretamente ao backend</h1>
   <p>
-    Explore nosso portfolio com filtros inteligentes por categoria, faixa de preco, sabor, tipo de
-    licor e avaliacao media.
+    Cada cartГЈo de produto reflete os dados retornados da API, garantindo alinhamento entre estoque,
+    descriГ§ГЈo e imagens.
   </p>
   <div class="hero-stats">
     <div>
@@ -23,147 +23,186 @@
 
 <ng-template #loadingState>
   <div class="loading-state">
-    <p>Carregando colecao...</p>
+    <p>Carregando colecao diretamente da API...</p>
   </div>
 </ng-template>
 
-<div class="catalog-layout" *ngIf="!isLoading; else loadingState">
-  <aside class="filters-panel">
-    <h2>Filtros</h2>
-
-    <div class="filter-section">
-      <p class="filter-title">Busca por nome</p>
-      <input
-        type="search"
-        placeholder="Digite o nome do produto"
-        [(ngModel)]="filters.search"
-        (input)="applyFilters(true)"
-      />
+<ng-template #errorState>
+  <div class="error-state">
+    <p>{{ errorMessage }}</p>
+    <div class="error-actions">
+      <button class="ghost-button" type="button" (click)="retryLoad()">Tentar novamente</button>
+      <a routerLink="/" class="primary-button">Voltar para a home</a>
     </div>
+  </div>
+</ng-template>
 
-    <div class="filter-section">
-      <p class="filter-title">Categoria</p>
-      <div class="chip-row">
-        <button
-          class="chip"
-          type="button"
-          [class.active]="filters.category === 'todos'"
-          (click)="setCategory('todos')"
-        >
-          Todas
-        </button>
-        <button
-          class="chip"
-          type="button"
-          *ngFor="let category of availableCategories"
-          [class.active]="filters.category === category"
-          (click)="setCategory(category)"
-        >
-          {{ category }}
-        </button>
-      </div>
-    </div>
+<ng-container *ngIf="!isLoading; else loadingState">
+  <ng-container *ngIf="!loadError; else errorState">
+    <div class="catalog-layout">
+      <aside class="filters-panel">
+        <h2>Filtros</h2>
 
-    <div class="filter-section">
-      <p class="filter-title">Faixa de preco</p>
-      <div class="price-inputs">
-        <label>
-          Min
-          <input type="number" [(ngModel)]="filters.minPrice" (change)="onPriceChange()" />
-        </label>
-        <label>
-          Max
-          <input type="number" [(ngModel)]="filters.maxPrice" (change)="onPriceChange()" />
-        </label>
-      </div>
-    </div>
-
-    <div class="filter-section">
-      <p class="filter-title">Sabor</p>
-      <select [(ngModel)]="filters.flavor" (change)="applyFilters(true)">
-        <option value="todos">Todos os sabores</option>
-        <option *ngFor="let flavor of availableFlavors" [value]="flavor">{{ flavor }}</option>
-      </select>
-    </div>
-
-    <div class="filter-section">
-      <p class="filter-title">Tipo de licor</p>
-      <select [(ngModel)]="filters.tipo" (change)="applyFilters(true)">
-        <option value="todos">Todos os tipos</option>
-        <option *ngFor="let tipo of availableTypes" [value]="tipo">{{ tipo }}</option>
-      </select>
-    </div>
-
-    <div class="filter-section">
-      <p class="filter-title">Avaliacao minima</p>
-      <select [(ngModel)]="filters.rating" (change)="applyFilters(true)">
-        <option [ngValue]="0">Todas as avaliacoes</option>
-        <option [ngValue]="5">5 estrelas</option>
-        <option [ngValue]="4.5">4.5 ou mais</option>
-        <option [ngValue]="4">4.0 ou mais</option>
-        <option [ngValue]="3.5">3.5 ou mais</option>
-      </select>
-    </div>
-  </aside>
-
-  <section class="products-panel">
-    <div class="panel-header">
-      <div>
-        <p class="result-title">Produtos</p>
-        <p class="result-description">
-          {{ filteredProducts.length }} item(s) correspondem aos filtros selecionados.
-        </p>
-      </div>
-      <div class="sort-control">
-        <label for="sort-select">Ordenar</label>
-        <select id="sort-select" [(ngModel)]="sortOption" (change)="applyFilters(true)">
-          <option value="destaque">Relevancia</option>
-          <option value="precoAsc">Preco: menor para maior</option>
-          <option value="precoDesc">Preco: maior para menor</option>
-          <option value="nome">Nome A-Z</option>
-          <option value="maisVendidos">Mais vendidos</option>
-        </select>
-      </div>
-    </div>
-
-    <div *ngIf="!visibleProducts.length" class="empty-state">
-      <p>Nenhum produto encontrado com os filtros atuais.</p>
-      <button class="ghost-button" type="button" (click)="setCategory('todos')">Limpar filtros</button>
-    </div>
-
-    <div class="product-grid">
-      <article
-        class="product-card"
-        *ngFor="let product of visibleProducts; index as index; trackBy: trackById"
-      >
-        <div class="product-media" [style.background]="accentBackground(index)">
-          <div class="media-header">
-            <span class="badge" *ngIf="product.badge">{{ product.badge }}</span>
-            <span class="rating">&#9733; {{ displayRating(product) }}</span>
-          </div>
-          <p class="sales">+{{ product.vendas || 0 }} pedidos</p>
+        <div class="filter-section">
+          <p class="filter-title">Busca por nome</p>
+          <input
+            type="search"
+            placeholder="Digite o nome do produto"
+            [(ngModel)]="filters.search"
+            (input)="applyFilters(true)"
+          />
         </div>
-        <div class="product-body">
-          <div class="category-row">
-            <span *ngFor="let categoria of getCategories(product)">{{ categoria }}</span>
-          </div>
-          <h3>{{ product.nome }}</h3>
-          <p>{{ product.descricao }}</p>
-          <div class="meta-row">
-            <span>{{ getFlavor(product) }}</span>
-            <span>{{ getType(product) }}</span>
-          </div>
-          <div class="product-footer">
-            <p class="price">{{ formatCurrency(product.preco) }}</p>
-            <a routerLink="/produtos" class="ghost-button">Ver detalhes</a>
+
+        <div class="filter-section">
+          <p class="filter-title">Categoria</p>
+          <div class="chip-row">
+            <button
+              class="chip"
+              type="button"
+              [class.active]="filters.category === 'todos'"
+              (click)="setCategory('todos')"
+            >
+              Todas
+            </button>
+            <button
+              class="chip"
+              type="button"
+              *ngFor="let category of availableCategories"
+              [class.active]="filters.category === category"
+              (click)="setCategory(category)"
+            >
+              {{ category }}
+            </button>
           </div>
         </div>
-      </article>
-    </div>
 
-    <div class="load-more" *ngIf="hasMore() && visibleProducts.length">
-      <button type="button" class="primary-button" (click)="loadMore()">Carregar mais</button>
-      <p>Exibindo {{ visibleProducts.length }} de {{ filteredProducts.length }} produtos</p>
+        <div class="filter-section">
+          <p class="filter-title">Faixa de preco</p>
+          <div class="price-inputs">
+            <label>
+              Min
+              <input type="number" [(ngModel)]="filters.minPrice" (change)="onPriceChange()" />
+            </label>
+            <label>
+              Max
+              <input type="number" [(ngModel)]="filters.maxPrice" (change)="onPriceChange()" />
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <p class="filter-title">Sabor</p>
+          <select [(ngModel)]="filters.flavor" (change)="applyFilters(true)">
+            <option value="todos">Todos os sabores</option>
+            <option *ngFor="let flavor of availableFlavors" [value]="flavor">{{ flavor }}</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <p class="filter-title">Tipo de licor</p>
+          <select [(ngModel)]="filters.tipo" (change)="applyFilters(true)">
+            <option value="todos">Todos os tipos</option>
+            <option *ngFor="let tipo of availableTypes" [value]="tipo">{{ tipo }}</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <p class="filter-title">Avaliacao minima</p>
+          <select [(ngModel)]="filters.rating" (change)="applyFilters(true)">
+            <option [ngValue]="0">Todas as avaliacoes</option>
+            <option [ngValue]="5">5 estrelas</option>
+            <option [ngValue]="4.5">4.5 ou mais</option>
+            <option [ngValue]="4">4.0 ou mais</option>
+            <option [ngValue]="3.5">3.5 ou mais</option>
+          </select>
+        </div>
+      </aside>
+
+      <section class="products-panel">
+        <div class="panel-header">
+          <div>
+            <p class="result-title">Produtos</p>
+            <p class="result-description">
+              {{ filteredProducts.length }} item(s) correspondem aos filtros selecionados.
+            </p>
+          </div>
+          <div class="sort-control">
+            <label for="sort-select">Ordenar</label>
+            <select id="sort-select" [(ngModel)]="sortOption" (change)="applyFilters(true)">
+              <option value="destaque">Relevancia</option>
+              <option value="precoAsc">Preco: menor para maior</option>
+              <option value="precoDesc">Preco: maior para menor</option>
+              <option value="nome">Nome A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div *ngIf="!visibleProducts.length" class="empty-state">
+          <p>Nenhum produto encontrado com os filtros atuais.</p>
+          <button class="ghost-button" type="button" (click)="setCategory('todos')">
+            Limpar filtros
+          </button>
+        </div>
+
+        <div class="product-grid">
+          <article
+            class="product-card"
+            *ngFor="let product of visibleProducts; index as index; trackBy: trackById"
+          >
+            <div class="product-media">
+              <img [src]="productImage(product, index)" [alt]="product.nome || 'Produto'" />
+              <div class="media-header">
+                <span class="badge" *ngIf="product.visivel !== false; else indisponivel"
+                  >Disponivel</span
+                >
+                <ng-template #indisponivel>
+                  <span class="badge muted">Indisponivel</span>
+                </ng-template>
+                <span class="rating" *ngIf="getRating(product); else semNota"
+                  >&#9733; {{ displayRating(product) }}</span
+                >
+                <ng-template #semNota>
+                  <span class="rating muted">Sem avaliacoes</span>
+                </ng-template>
+              </div>
+            </div>
+            <div class="product-body">
+              <div class="category-row">
+                <span *ngFor="let categoria of getCategories(product)">{{ categoria }}</span>
+              </div>
+              <h3>{{ product.nome }}</h3>
+              <p>{{ product.descricao || 'Atualize a descricao no backend para exibir aqui.' }}</p>
+              <div class="meta-row">
+                <span>{{ getFlavor(product) }}</span>
+                <span>{{ getType(product) }}</span>
+              </div>
+              <div class="tech-info">
+                <span>{{ stockLabel(product) }}</span>
+                <span *ngIf="product.teorAlcoolico">Teor: {{ product.teorAlcoolico }}%</span>
+                <span *ngIf="product.embalagem?.volume as volume">Volume: {{ volume }} ml</span>
+              </div>
+              <div class="product-footer">
+                <p class="price">{{ formatCurrency(product.preco) }}</p>
+                <a
+                  *ngIf="product.id; else detalheBloqueado"
+                  class="ghost-button"
+                  [routerLink]="['/produtos', product.id]"
+                >
+                  Ver detalhes
+                </a>
+                <ng-template #detalheBloqueado>
+                  <span class="muted-warning">Cadastre o ID para liberar detalhes.</span>
+                </ng-template>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="load-more" *ngIf="hasMore() && visibleProducts.length">
+          <button type="button" class="primary-button" (click)="loadMore()">Carregar mais</button>
+          <p>Exibindo {{ visibleProducts.length }} de {{ filteredProducts.length }} produtos</p>
+        </div>
+      </section>
     </div>
-  </section>
-</div>
+  </ng-container>
+</ng-container>

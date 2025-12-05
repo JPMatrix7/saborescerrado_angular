@@ -79,16 +79,22 @@ section {
   font-size: 0.95rem;
 }
 
-.hero-card {
-  background: #fff;
+.hero-visual {
+  background: linear-gradient(135deg, rgba(154, 52, 18, 0.08), rgba(217, 119, 6, 0.08));
   border-radius: 1.5rem;
   padding: 2rem;
-  box-shadow: 0 30px 60px rgba(29, 19, 14, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(154, 52, 18, 0.12);
 }
 
-.hero-card.secondary {
-  background: #1f1813;
-  color: #fff;
+.hero-chip.secondary {
+  background: rgba(31, 24, 19, 0.12);
+  color: #1f1813;
+}
+
+.hero-helper {
+  margin-top: 1.5rem;
+  color: #6f5c50;
+  font-size: 0.95rem;
 }
 
 .card-tag {
@@ -96,19 +102,6 @@ section {
   color: #9a3412;
   text-transform: uppercase;
   letter-spacing: 0.15rem;
-}
-
-.hero-showcase {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  font-weight: 600;
 }
 
 .hero-metrics {
@@ -132,8 +125,7 @@ section {
 .featured-carousel header h2,
 .category-grid header h2,
 .testimonial-section header h2,
-.about-section h2,
-.newsletter-card h2 {
+.about-section h2 {
   margin: 0.75rem 0;
 }
 
@@ -156,6 +148,31 @@ section {
   box-shadow: 0 25px 45px rgba(0, 0, 0, 0.08);
 }
 
+.card-media {
+  border-radius: 1rem;
+  overflow: hidden;
+  height: 260px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdf4ec;
+}
+
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-media.placeholder {
+  color: #9a3412;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -173,17 +190,16 @@ section {
   font-weight: 700;
 }
 
-.price {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
 .card-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-top: 1.5rem;
+}
+
+.card-warning {
+  font-size: 0.85rem;
+  color: #b45309;
 }
 
 .carousel-nav {
@@ -206,6 +222,11 @@ section {
 
 .carousel-nav.next {
   right: 1rem;
+}
+
+.carousel-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .carousel-dots {
@@ -322,46 +343,13 @@ section {
   color: #6a5244;
 }
 
-.newsletter {
-  margin-bottom: 2rem;
-}
-
-.newsletter-card {
-  background: linear-gradient(135deg, #1f1813, #3d2b21);
-  color: #fff;
-  padding: 3rem;
-  border-radius: 1.75rem;
-}
-
-.newsletter-card .section-chip {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.input-group {
-  display: flex;
-  gap: 1rem;
-  margin: 2rem 0 0.5rem;
-  flex-wrap: wrap;
-}
-
-.input-group input {
-  flex: 1;
-  min-width: 200px;
-  border-radius: 999px;
-  padding: 0.9rem 1.25rem;
-  border: none;
-  outline: none;
-}
-
-.feedback {
-  margin: 0;
-  color: #fed7aa;
-}
-
-.disclaimer {
-  color: rgba(255, 255, 255, 0.7);
-  margin-top: 0.35rem;
+.empty-state {
+  background: #fff9f5;
+  border: 1px dashed rgba(154, 52, 18, 0.35);
+  padding: 1.75rem;
+  border-radius: 1.25rem;
+  margin-top: 2rem;
+  color: #6f5c50;
 }
 
 @media (max-width: 720px) {
@@ -370,16 +358,11 @@ section {
   }
 
   .about-section,
-  .testimonial-section,
-  .newsletter-card {
+  .testimonial-section {
     padding: 2rem;
   }
 
   .carousel-nav {
     display: none;
-  }
-
-  .input-group {
-    flex-direction: column;
   }
 }

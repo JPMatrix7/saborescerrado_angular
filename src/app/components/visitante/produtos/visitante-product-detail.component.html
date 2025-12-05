@@ -1,0 +1,128 @@
+<ng-template #loadingState>
+  <div class="loading-state">
+    <p>Carregando detalhes diretamente da API...</p>
+  </div>
+</ng-template>
+
+<section class="error-state" *ngIf="loadError">
+  <p>{{ loadError }}</p>
+  <div class="error-actions">
+    <button class="ghost-button" type="button" (click)="retry()" *ngIf="currentProductId">
+      Tentar novamente
+    </button>
+    <a routerLink="/produtos" class="primary-button">Voltar ao catalogo</a>
+  </div>
+</section>
+
+<ng-container *ngIf="!loadError">
+  <ng-container *ngIf="!isLoading && product as current; else loadingState">
+    <section class="detail-hero">
+      <div class="hero-image">
+        <img [src]="heroImage" [alt]="current.nome" />
+        <div class="thumbs">
+          <img
+            *ngFor="let image of galleryImages; index as index"
+            [src]="image"
+            [alt]="current.nome + ' imagem ' + (index + 1)"
+          />
+        </div>
+      </div>
+      <div class="hero-info">
+        <p class="section-chip">Produto do catalogo oficial</p>
+        <h1>{{ current.nome }}</h1>
+        <p>{{ current.descricao || 'Atualize a descricao no backend para exibir aqui.' }}</p>
+
+        <div class="tag-row">
+          <span *ngFor="let categoria of categoryLabels(current)">{{ categoria }}</span>
+        </div>
+
+        <div class="hero-meta">
+          <div>
+            <p class="meta-label">Preco</p>
+            <p class="meta-value">{{ formatCurrency(current.preco) }}</p>
+          </div>
+          <div>
+            <p class="meta-label">Avaliacao</p>
+            <p class="meta-value">{{ ratingDisplay(current) }}</p>
+          </div>
+          <div>
+            <p class="meta-label">Teor alcoolico</p>
+            <p class="meta-value">
+              {{ current.teorAlcoolico ? current.teorAlcoolico + '%' : 'Nao informado' }}
+            </p>
+          </div>
+          <div>
+            <p class="meta-label">Estoque</p>
+            <p class="meta-value">
+              {{ current.estoque != null ? current.estoque : 'Sob consulta' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a routerLink="/produtos" class="ghost-button">Voltar ao catalogo</a>
+          <a routerLink="/" class="primary-button">Explorar lancamentos</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-grid">
+      <article>
+        <h2>Ingredientes &amp; notas sensoriais</h2>
+        <ul *ngIf="ingredientes(current).length; else ingredientesPlaceholder">
+          <li *ngFor="let item of ingredientes(current)">{{ item }}</li>
+        </ul>
+        <ng-template #ingredientesPlaceholder>
+          <p>Cadastre os ingredientes no backend para contar esta historia aos visitantes.</p>
+        </ng-template>
+      </article>
+
+      <article>
+        <h2>Origem e safra</h2>
+        <ul>
+          <li>
+            Safra:
+            <strong
+              >{{
+                current.safra?.anoSafra ? (current.safra?.anoSafra | date: 'yyyy') : 'Nao informada'
+              }}</strong
+            >
+          </li>
+          <li>Fazenda: <strong>{{ current.safra?.fazenda || 'Defina no backend' }}</strong></li>
+          <li>
+            Cidade:
+            <strong>{{ current.safra?.cidade?.nome || 'Informe a cidade da safra' }}</strong>
+          </li>
+          <li>Parceiro comercial: <strong>{{ parceiro(current) }}</strong></li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>Premiacoes</h2>
+        <ul *ngIf="premiacoes(current).length; else premiacoesPlaceholder">
+          <li *ngFor="let premiacao of premiacoes(current)">{{ premiacao }}</li>
+        </ul>
+        <ng-template #premiacoesPlaceholder>
+          <p>Sem registros de premiacao. Atualize o backend para exibir conquistas.</p>
+        </ng-template>
+      </article>
+
+      <article>
+        <h2>Avaliacoes</h2>
+        <div *ngIf="hasAvaliacoes(current); else avaliacoesPlaceholder" class="avaliacoes">
+          <article *ngFor="let avaliacao of current.avaliacoes">
+            <p class="rating">&#9733; {{ avaliacao.estrelas }}</p>
+            <p>{{ avaliacao.comentario || 'Comentario nao informado.' }}</p>
+            <p class="author">
+              {{ avaliacao.nomeUsuario || 'Cliente' }} -
+              {{ avaliacao.dataAvaliacao | date: 'dd/MM/yyyy' }}
+            </p>
+          </article>
+        </div>
+        <ng-template #avaliacoesPlaceholder>
+          <p>Ainda sem avaliacoes públicas. Assim que chegarem, elas aparecem aqui automaticamente.</p>
+        </ng-template>
+      </article>
+    </section>
+  </ng-container>
+</ng-container>

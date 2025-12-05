@@ -161,8 +161,9 @@ section {
 .product-grid {
   margin-top: 1.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
+  align-items: stretch;
 }
 
 .product-card {
@@ -172,25 +173,38 @@ section {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .product-media {
-  padding: 1.5rem;
-  color: #fff;
-  min-height: 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  position: relative;
+  min-height: 240px;
+  max-height: 240px;
+  background: #1f1a16;
+  display: block;
+  flex-shrink: 0;
+}
+
+.product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .media-header {
+  position: absolute;
+  inset: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 65%);
+  color: #fff;
 }
 
 .badge {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(154, 52, 18, 0.85);
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -198,6 +212,12 @@ section {
 
 .rating {
   font-weight: 700;
+}
+
+.rating.muted,
+.badge.muted {
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .sales {
@@ -211,6 +231,7 @@ section {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex: 1;
 }
 
 .category-row {
@@ -223,6 +244,26 @@ section {
   color: #a16207;
 }
 
+.product-body h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  min-height: 2.3em;
+  line-height: 1.15;
+}
+
+.product-body > p {
+  margin: 0;
+  color: #6b5a52;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  min-height: 4.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
 .meta-row {
   display: flex;
   justify-content: space-between;
@@ -230,10 +271,20 @@ section {
   font-size: 0.85rem;
 }
 
+.tech-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #7c6a5f;
+}
+
 .product-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 .price {
@@ -272,13 +323,30 @@ section {
 }
 
 .loading-state,
-.empty-state {
+.empty-state,
+.error-state {
   background: #fff;
   border-radius: 1rem;
   padding: 2rem;
   text-align: center;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
   margin-top: 1.5rem;
+}
+
+.error-state {
+  border: 1px solid rgba(180, 83, 9, 0.25);
+}
+
+.error-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.muted-warning {
+  font-size: 0.85rem;
+  color: #b45309;
 }
 
 @media (max-width: 960px) {
