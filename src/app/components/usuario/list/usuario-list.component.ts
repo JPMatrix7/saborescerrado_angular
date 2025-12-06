@@ -10,10 +10,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { Usuario } from '../../../models/usuario.model';
-import { Perfil } from '../../../models/enums.model';
-import { UsuarioService } from '../../../services/usuario.service';
-import { CpfPipe } from '../../../pipes/cpf.pipe';
+import { Usuario } from '@models/usuario.model';
+import { Perfil } from '@models/enums.model';
+import { UsuarioService } from '@services/usuario.service';
+import { CpfPipe } from '@pipes/cpf.pipe';
 
 @Component({
   selector: 'app-usuario-list',
@@ -65,7 +65,7 @@ export class UsuarioListComponent implements OnInit {
         console.log('✅ Usuários carregados:', data);
         this.usuarios.set(data);
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('❌ Erro ao carregar usuários:', error);
         this.snackBar.open('Erro ao carregar usuários', 'OK', { duration: 3000 });
         // Fallback para dados estáticos em caso de erro
@@ -80,7 +80,7 @@ export class UsuarioListComponent implements OnInit {
         console.log('✅ Total de usuários:', total);
         this.totalElements.set(total);
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('❌ Erro ao contar usuários:', error);
         this.totalElements.set(0);
       }
@@ -178,7 +178,7 @@ export class UsuarioListComponent implements OnInit {
         this.snackBar.open(successMessage, 'OK', { duration: 3000 });
         this.loadUsuarios();
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('Erro ao alternar status do usuario:', error);
         this.snackBar.open('Nao foi possivel atualizar o status', 'OK', { duration: 3000 });
       }

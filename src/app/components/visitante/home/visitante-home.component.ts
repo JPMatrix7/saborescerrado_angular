@@ -3,10 +3,10 @@ import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Categoria } from '../../../models/categoria.model';
-import { Licor } from '../../../models/licor.model';
-import { CategoriaService } from '../../../services/categoria.service';
-import { ProdutoService } from '../../../services/produto.service';
+import { Categoria } from '@models/categoria.model';
+import { Licor } from '@models/licor.model';
+import { CategoriaService } from '@services/categoria.service';
+import { ProdutoService } from '@services/produto.service';
 import { fallbackImage } from '../shared/image-fallbacks';
 
 interface FeaturedProduct {

@@ -11,10 +11,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Usuario, PessoaFisicaDTO, UsuarioCreateDTO, UsuarioUpdateDTO } from '../../../models/usuario.model';
-import { Perfil } from '../../../models/enums.model';
-import { CustomValidators } from '../../../validators/custom-validators';
-import { UsuarioService } from '../../../services/usuario.service';
+import { Usuario, PessoaFisicaDTO, UsuarioCreateDTO, UsuarioUpdateDTO } from '@models/usuario.model';
+import { Perfil } from '@models/enums.model';
+import { CustomValidators } from '@validators/custom-validators';
+import { UsuarioService } from '@services/usuario.service';
 
 @Component({
   selector: 'app-usuario-form',
@@ -157,7 +157,7 @@ export class UsuarioFormComponent implements OnInit {
         
         console.log('✅ Formulário preenchido');
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('❌ Erro ao carregar usuário:', error);
         this.snackBar.open('Erro ao carregar usuário', 'OK', { duration: 3000 });
         this.router.navigate(['/admin/usuarios']);
@@ -203,7 +203,7 @@ export class UsuarioFormComponent implements OnInit {
             this.snackBar.open('Usuário atualizado com sucesso!', 'OK', { duration: 3000 });
             this.router.navigate(['/admin/usuarios']);
           },
-          error: (error) => this.handleError(error, 'Erro ao atualizar usuário')
+          error: (error: unknown) => this.handleError(error, 'Erro ao atualizar usuário')
         });
       } else {
         // ========== CRIAÇÃO (POST) ==========
@@ -225,7 +225,7 @@ export class UsuarioFormComponent implements OnInit {
             this.snackBar.open('Usuário criado com sucesso!', 'OK', { duration: 3000 });
             this.router.navigate(['/admin/usuarios']);
           },
-          error: (error) => this.handleError(error, 'Erro ao criar usuário')
+          error: (error: unknown) => this.handleError(error, 'Erro ao criar usuário')
         });
       }
     } else {

@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Licor } from '../../../models/licor.model';
-import { ProdutoService } from '../../../services/produto.service';
+import { Licor } from '@models/licor.model';
+import { ProdutoService } from '@services/produto.service';
 import { fallbackImage } from '../shared/image-fallbacks';
 
 type CatalogProduct = Licor;

@@ -3,8 +3,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Licor } from '../../../models/licor.model';
-import { ProdutoService } from '../../../services/produto.service';
+import { Licor } from '@models/licor.model';
+import { ProdutoService } from '@services/produto.service';
 import { fallbackImage } from '../shared/image-fallbacks';
 
 @Component({
