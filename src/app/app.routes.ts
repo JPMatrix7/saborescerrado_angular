@@ -23,6 +23,8 @@ import { VisitanteProductDetailComponent } from './components/visitante/produtos
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { ProfileComponent } from './components/auth/profile/profile.component';
+import { MeusPedidosComponent } from './components/visitante/pedidos/meus-pedidos.component';
+import { CarrinhoPageComponent } from './components/visitante/carrinho/carrinho-page.component';
 import { adminGuard, authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -33,7 +35,9 @@ export const routes: Routes = [
       { path: '', component: VisitanteHomeComponent },
       { path: 'produtos', component: VisitanteProductsComponent },
       { path: 'produtos/:id', component: VisitanteProductDetailComponent },
-      { path: 'perfil', component: ProfileComponent, canMatch: [authGuard] }
+      { path: 'carrinho', component: CarrinhoPageComponent },
+      { path: 'perfil', component: ProfileComponent, canMatch: [authGuard] },
+      { path: 'meus-pedidos', component: MeusPedidosComponent, canMatch: [authGuard] }
     ]
   },
   { path: 'login', component: LoginComponent },

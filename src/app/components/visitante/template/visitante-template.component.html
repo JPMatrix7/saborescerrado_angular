@@ -20,8 +20,10 @@
   <div class="header-actions">
     <div class="cta-actions">
       <a class="ghost-button" routerLink="/produtos" (click)="closeMenu()">Catalogo</a>
-      <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Compre agora</a>
     </div>
+    <button class="pill-button" type="button" (click)="toggleCart()">
+      Carrinho <span class="cart-count" *ngIf="cartCount()">{{ cartCount() }}</span>
+    </button>
     <div class="account-actions">
       <a
         *ngIf="!isLoggedIn(); else profileLink"
@@ -43,6 +45,8 @@
   </div>
 </header>
 
+<app-carrinho [open]="cartOpen()" (close)="closeCart()"></app-carrinho>
+
 <div class="mobile-menu" [class.open]="menuOpen()">
   <nav>
     <a
@@ -62,6 +66,7 @@
       <a class="nav-link" routerLink="/perfil" (click)="closeMenu()">Perfil</a>
     </ng-template>
     <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Ver produtos</a>
+    <button class="nav-link" type="button" (click)="toggleCart()">Abrir carrinho</button>
   </nav>
 </div>
 

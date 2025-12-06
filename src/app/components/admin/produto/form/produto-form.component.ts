@@ -20,6 +20,7 @@ import { Categoria } from '@models/categoria.model';
 import { Fornecedor } from '@models/fornecedor.model';
 import { Sabor, Embalagem, SafraLicor } from '@models/licor.model';
 import { TipoLicor } from '@models/enums.model';
+import { UploadService } from '@services/upload.service';
 
 @Component({
   selector: 'app-produto-form',
@@ -47,6 +48,8 @@ export class ProdutoFormComponent implements OnInit {
   tiposLicor = Object.values(TipoLicor);
   isEditMode = false;
   produtoId?: number;
+  isUploading = false;
+  imagemPreview = '';
 
   constructor(
     private fb: FormBuilder,
@@ -56,6 +59,7 @@ export class ProdutoFormComponent implements OnInit {
     private saborService: SaborService,
     private embalagemService: EmbalagemService,
     private safraService: SafraService,
+    private uploadService: UploadService,
     private router: Router,
     private route: ActivatedRoute,
     private location: Location
@@ -92,7 +96,8 @@ export class ProdutoFormComponent implements OnInit {
       saborId: [null],
       embalagemId: [null],
       safraId: [null],
-      imagemUrl: [''],
+      imagem: ['', Validators.required],
+      imagens: [''],
       ativo: [true]
     });
   }
@@ -147,9 +152,11 @@ export class ProdutoFormComponent implements OnInit {
           saborId: produto.sabor?.id,
           embalagemId: produto.embalagem?.id,
           safraId: produto.safra?.id,
-          imagemUrl: produto.imagens?.[0] || '',
+          imagem: produto.imagem || produto.imagens?.[0] || '',
+          imagens: (produto.imagens || []).join(', '),
           ativo: produto.visivel
         });
+        this.imagemPreview = produto.imagem || produto.imagens?.[0] || '';
       },
       error: (error: unknown) => console.error('Erro ao carregar produto:', error)
     });
@@ -170,15 +177,19 @@ export class ProdutoFormComponent implements OnInit {
         tipo: formValue.tipo,
         
         // IDs das entidades relacionadas
-        sabor: formValue.saborId,
-        embalagem: formValue.embalagemId,
-        safralicor: formValue.safraId,
-        parceiroComercial: formValue.fornecedorId,
+        saborId: formValue.saborId,
+        embalagemId: formValue.embalagemId,
+        safraId: formValue.safraId,
+        parceiroComercialId: formValue.fornecedorId,
         
         // Arrays de IDs
         categoriasIds: formValue.categoriaId ? [formValue.categoriaId] : [],
         ingredientesIds: [],
-        premiacoesIds: []
+        premiacoesIds: [],
+
+        // Imagens
+        imagem: formValue.imagem || undefined,
+        imagens: this.parseImagens(formValue.imagens, formValue.imagem)
       };
 
       console.log('DTO enviado para API:', JSON.stringify(licorDTO, null, 2));
@@ -237,5 +248,36 @@ export class ProdutoFormComponent implements OnInit {
 
   voltar(): void {
     this.location.back();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.isUploading = true;
+    this.uploadService.uploadImagem(file, file.name).subscribe({
+      next: (resp) => {
+        this.isUploading = false;
+        this.produtoForm.patchValue({ imagem: resp.url });
+        this.imagemPreview = resp.url;
+      },
+      error: (err) => {
+        this.isUploading = false;
+        console.error('Erro ao enviar imagem', err);
+        alert('Erro ao enviar imagem. Verifique o token ADMIN e o endpoint /upload/imagem.');
+      }
+    });
+  }
+
+  private parseImagens(imagensInput: string, principal?: string): string[] {
+    const parts = (imagensInput || '')
+      .split(',')
+      .map(p => p.trim())
+      .filter(Boolean);
+    if (principal) {
+      parts.unshift(principal);
+    }
+    return Array.from(new Set(parts));
   }
 }

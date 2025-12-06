@@ -5,8 +5,10 @@ import { Subscription } from 'rxjs';
 
 import { Categoria } from '@models/categoria.model';
 import { Licor } from '@models/licor.model';
+import { Testimonial } from '@models/testimonial.model';
 import { CategoriaService } from '@services/categoria.service';
 import { ProdutoService } from '@services/produto.service';
+import { TestimonialService } from '@services/testimonial.service';
 import { fallbackImage } from '../shared/image-fallbacks';
 
 interface FeaturedProduct {
@@ -25,13 +27,6 @@ interface CategoryCard {
   color: string;
 }
 
-interface Testimonial {
-  name: string;
-  city: string;
-  comment: string;
-  rating: number;
-}
-
 @Component({
   selector: 'app-visitante-home',
   standalone: true,
@@ -43,27 +38,9 @@ export class VisitanteHomeComponent implements OnInit, OnDestroy {
   readonly activeSlide = signal(0);
   featuredProducts: FeaturedProduct[] = [];
   categories: CategoryCard[] = [];
-
-  readonly testimonials: Testimonial[] = [
-    {
-      name: 'Marina Figueiredo',
-      city: 'Brasilia - DF',
-      comment: 'A textura e o aroma do licor de buriti sao inesqueciveis. Entrega impecavel!',
-      rating: 5
-    },
-    {
-      name: 'Diego Amaral',
-      city: 'Goiania - GO',
-      comment: 'Perfeito para presentear clientes. A embalagem e o sabor impressionam.',
-      rating: 5
-    },
-    {
-      name: 'Luiza Cabral',
-      city: 'Belo Horizonte - MG',
-      comment: 'O kit degustacao trouxe a experiencia do Cerrado para minha casa.',
-      rating: 4.5
-    }
-  ];
+  testimonials = signal<Testimonial[]>([]);
+  testimonialsLoading = signal(false);
+  testimonialsError = signal('');
 
   readonly metrics = [
     { value: '10+', label: 'anos de pesquisa' },
@@ -77,12 +54,14 @@ export class VisitanteHomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly produtoService: ProdutoService,
-    private readonly categoriaService: CategoriaService
+    private readonly categoriaService: CategoriaService,
+    private readonly testimonialService: TestimonialService
   ) {}
 
   ngOnInit(): void {
     this.carregarProdutosEmDestaque();
     this.carregarCategorias();
+    this.carregarDepoimentos();
   }
 
   ngOnDestroy(): void {
@@ -171,13 +150,41 @@ export class VisitanteHomeComponent implements OnInit, OnDestroy {
     this.subscriptions.add(subscription);
   }
 
+  private carregarDepoimentos(): void {
+    this.testimonialsLoading.set(true);
+    this.testimonialsError.set('');
+
+    const subscription = this.testimonialService.getPublicos().subscribe({
+      next: depoimentos => {
+        const parsed = Array.isArray(depoimentos) ? depoimentos : [];
+        this.testimonials.set(
+          parsed.map(d => ({
+            id: d.id,
+            nome: d.nome || d.comentario || 'Cliente',
+            cidade: d.cidade,
+            comentario: d.comentario,
+            nota: d.nota ?? 5
+          }))
+        );
+        this.testimonialsLoading.set(false);
+      },
+      error: () => {
+        this.testimonials.set([]);
+        this.testimonialsError.set('Nao foi possivel carregar os depoimentos.');
+        this.testimonialsLoading.set(false);
+      }
+    });
+
+    this.subscriptions.add(subscription);
+  }
+
   private mapLicorParaCard(licor: Licor, index: number): FeaturedProduct {
     return {
       id: licor.id,
       title: licor.nome,
       description: licor.descricao ?? 'Descricao indisponivel no momento.',
       tag: licor.categorias && licor.categorias.length ? licor.categorias[0].nome : 'Licor artesanal',
-      image: licor.imagens && licor.imagens.length ? licor.imagens[0] : fallbackImage(index),
+      image: licor.imagem || (licor.imagens && licor.imagens.length ? licor.imagens[0] : fallbackImage(index)),
       rating: licor.estrelas ?? this.calcularNotaMedia(licor)
     };
   }

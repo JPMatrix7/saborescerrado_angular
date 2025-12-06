@@ -13,6 +13,7 @@
         <button *ngIf="isEditing" mat-stroked-button color="primary" type="button" (click)="cancelEdit()" [disabled]="loading">
           Cancelar
         </button>
+        <a mat-stroked-button color="primary" routerLink="/meus-pedidos">Meus pedidos</a>
       </div>
     </div>
 
@@ -129,16 +130,51 @@
               <mat-label>Bairro</mat-label>
               <input matInput formControlName="bairro" />
             </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>CEP</mat-label>
+            <input matInput formControlName="cep" maxlength="8" />
+            <mat-hint>Apenas numeros</mat-hint>
+            <mat-error *ngIf="enderecoForm.get('cep')?.hasError('pattern')">CEP deve ter 8 digitos.</mat-error>
+          </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>CEP</mat-label>
-              <input matInput formControlName="cep" maxlength="8" />
-              <mat-hint>Apenas numeros</mat-hint>
-              <mat-error *ngIf="enderecoForm.get('cep')?.hasError('pattern')">CEP deve ter 8 digitos.</mat-error>
+              <mat-label>Estado (sigla)</mat-label>
+              <input
+                matInput
+                maxlength="2"
+                formControlName="estadoSigla"
+                (input)="onEstadoSiglaChange()"
+                (blur)="onEstadoSiglaChange()"
+              />
+              <mat-hint>Ex: MG</mat-hint>
+              <mat-error *ngIf="enderecoForm.get('estadoSigla')?.invalid">Estado obrigatorio (2 letras).</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Cidade (ID)</mat-label>
-              <input matInput type="number" formControlName="cidadeId" />
+              <mat-label>Buscar cidade</mat-label>
+              <input
+                matInput
+                formControlName="cidadeNome"
+                placeholder="Digite parte do nome"
+                (input)="onCidadeBuscaChange()"
+                [disabled]="!estadoSelecionado"
+              />
+              <mat-hint *ngIf="estadoSelecionado">Mostrando cidades de {{ enderecoForm.value.estadoSigla }}</mat-hint>
+              <mat-error *ngIf="enderecoForm.get('cidadeId')?.invalid">Selecione uma cidade.</mat-error>
             </mat-form-field>
+          </div>
+
+          <div class="cidade-suggestions" *ngIf="cidadesFiltradas.length && estadoSelecionado">
+            <p class="hint">Selecione a cidade abaixo:</p>
+            <div class="cidade-list">
+              <button
+                type="button"
+                class="cidade-item"
+                *ngFor="let cidade of cidadesFiltradas"
+                (click)="selecionarCidade(cidade)"
+                [class.selected]="cidade.id === enderecoForm.value.cidadeId"
+              >
+                {{ cidade.nome }} - {{ estadoSelecionado?.sigla }}
+              </button>
+            </div>
           </div>
           <div class="section-actions">
             <button mat-flat-button color="primary" type="button" (click)="saveEndereco()" [disabled]="!isEditing || savingEndereco">

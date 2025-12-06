@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Licor } from '@models/licor.model';
 import { ProdutoService } from '@services/produto.service';
 import { fallbackImage } from '../shared/image-fallbacks';
+import { CarrinhoService } from '@services/carrinho.service';
 
 type CatalogProduct = Licor;
 
@@ -50,7 +51,7 @@ export class VisitanteProductsComponent implements OnInit {
   pageSize = 6;
   currentPage = 1;
 
-  constructor(private readonly produtoService: ProdutoService) {}
+  constructor(private readonly produtoService: ProdutoService, private readonly carrinhoService: CarrinhoService) {}
 
   ngOnInit(): void {
     this.fetchProducts();
@@ -127,10 +128,8 @@ export class VisitanteProductsComponent implements OnInit {
   }
 
   productImage(product: CatalogProduct, index: number): string {
-    if (product.imagens && product.imagens.length) {
-      return product.imagens[0];
-    }
-
+    if (product.imagem) return product.imagem;
+    if (product.imagens && product.imagens.length) return product.imagens[0];
     return fallbackImage(index);
   }
 
@@ -259,5 +258,20 @@ export class VisitanteProductsComponent implements OnInit {
 
   private updateVisibleProducts(): void {
     this.visibleProducts = this.filteredProducts.slice(0, this.currentPage * this.pageSize);
+  }
+
+  addToCart(product: CatalogProduct): void {
+    if (product.estoque !== undefined && product.estoque <= 0) {
+      return;
+    }
+    this.carrinhoService.addItem(product, 1);
+  }
+
+  buyNow(product: CatalogProduct): void {
+    if (product.estoque !== undefined && product.estoque <= 0) {
+      return;
+    }
+    this.carrinhoService.addItem(product, 1);
+    this.carrinhoService.requestOpen();
   }
 }

@@ -183,16 +183,24 @@
               </div>
               <div class="product-footer">
                 <p class="price">{{ formatCurrency(product.preco) }}</p>
-                <a
-                  *ngIf="product.id; else detalheBloqueado"
-                  class="ghost-button"
-                  [routerLink]="['/produtos', product.id]"
-                >
-                  Ver detalhes
-                </a>
-                <ng-template #detalheBloqueado>
-                  <span class="muted-warning">Cadastre o ID para liberar detalhes.</span>
-                </ng-template>
+                <div class="actions">
+                  <a
+                    *ngIf="product.id; else detalheBloqueado"
+                    class="ghost-button"
+                    [routerLink]="['/produtos', product.id]"
+                  >
+                    Ver detalhes
+                  </a>
+                  <button type="button" class="primary-button" (click)="addToCart(product)">
+                    Adicionar ao carrinho
+                  </button>
+                  <button type="button" class="ghost-button" (click)="buyNow(product)">
+                    Comprar agora
+                  </button>
+                  <ng-template #detalheBloqueado>
+                    <span class="muted-warning">Cadastre o ID para liberar detalhes.</span>
+                  </ng-template>
+                </div>
               </div>
             </div>
           </article>

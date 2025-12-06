@@ -6,10 +6,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { CadastroPFRequest } from '@models/auth.model';
-import { CpfMaskDirective } from '../../../directives/cpf-mask.directive';
 
 @Component({
   selector: 'app-register',
@@ -22,8 +23,9 @@ import { CpfMaskDirective } from '../../../directives/cpf-mask.directive';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    RouterLink,
-    CpfMaskDirective
+    MatDatepickerModule,
+    MatNativeDateModule,
+    RouterLink
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -42,8 +44,9 @@ export class RegisterComponent {
 
   form: FormGroup = this.fb.group({
     nome: ['', [Validators.required, Validators.minLength(2)]],
+    sobrenome: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    cpf: ['', [Validators.required, Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)]],
+    cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
     dataNascimento: ['', [Validators.required, this.minAgeValidator(18)]],
     senha: ['', [Validators.required, Validators.minLength(6)]],
     confirmarSenha: ['', [Validators.required, Validators.minLength(6)]]
@@ -62,10 +65,11 @@ export class RegisterComponent {
 
     const payload: CadastroPFRequest = {
       nome: this.form.value.nome!,
+      sobrenome: this.form.value.sobrenome!,
       email: this.form.value.email!,
       senha: this.form.value.senha!,
-      cpf: this.form.value.cpf!.replace(/\D/g, ''),
-      dataNascimento: this.form.value.dataNascimento!,
+      cpf: this.form.value.cpf!,
+      dataNascimento: this.formatDateToISO(this.form.value.dataNascimento!),
       enderecosIds: [],
       telefonesIds: [],
       cartoesIds: []
@@ -116,5 +120,13 @@ export class RegisterComponent {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     return `${today.getFullYear()}-${month}-${day}`;
+  }
+
+  private formatDateToISO(date: Date | string): string {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

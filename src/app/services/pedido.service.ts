@@ -11,7 +11,9 @@ export class PedidoService {
   private baseUrl = 'http://localhost:8080/compra';
   private adminUrl = 'http://localhost:8080/compra/admin';
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(
+    private httpClient: HttpClient
+  ) {}
 
   // Usuário: lista suas compras (opcional filtro por status)
   getCompras(status?: StatusPedido): Observable<Compra[]> {
@@ -65,4 +67,5 @@ export class PedidoService {
   getByStatus(status: StatusPedido): Observable<Compra[]> {
     return this.httpClient.get<Compra[]>(`${this.baseUrl}/status/${status}`);
   }
+
 }

@@ -10,11 +10,19 @@
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
-      <mat-form-field appearance="outline">
-        <mat-label>Nome</mat-label>
-        <input matInput formControlName="nome" />
-        <mat-error *ngIf="form.get('nome')?.hasError('required')">Nome obrigatorio</mat-error>
-      </mat-form-field>
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" />
+          <mat-error *ngIf="form.get('nome')?.hasError('required')">Nome obrigatorio</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sobrenome</mat-label>
+          <input matInput formControlName="sobrenome" />
+          <mat-error *ngIf="form.get('sobrenome')?.hasError('required')">Sobrenome obrigatorio</mat-error>
+        </mat-form-field>
+      </div>
 
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
@@ -26,16 +34,24 @@
       <div class="grid">
         <mat-form-field appearance="outline">
           <mat-label>CPF</mat-label>
-          <input matInput formControlName="cpf" placeholder="XXX.XXX.XXX-XX" appCpfMask />
+          <input matInput formControlName="cpf" placeholder="12345678901" maxlength="11" />
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-hint>Formato: 11 dígitos sem pontos nem traços</mat-hint>
           <mat-error *ngIf="form.get('cpf')?.hasError('required')">CPF obrigatorio</mat-error>
-          <mat-error *ngIf="form.get('cpf')?.hasError('pattern')">Formato: XXX.XXX.XXX-XX</mat-error>
+          <mat-error *ngIf="form.get('cpf')?.hasError('pattern')">CPF deve ter 11 dígitos</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Data de nascimento</mat-label>
-          <input matInput type="date" formControlName="dataNascimento" [max]="maxDate" />
+          <mat-label>Data de Nascimento</mat-label>
+          <input matInput 
+                 [matDatepicker]="picker" 
+                 formControlName="dataNascimento"
+                 placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-hint>Você deve ter 18 anos ou mais</mat-hint>
           <mat-error *ngIf="form.get('dataNascimento')?.hasError('required')">Obrigatorio</mat-error>
-          <mat-error *ngIf="form.get('dataNascimento')?.hasError('minAge')">Necessario ter 18 anos ou mais</mat-error>
+          <mat-error *ngIf="form.get('dataNascimento')?.hasError('minAge')">Necessário ter 18 anos ou mais</mat-error>
         </mat-form-field>
       </div>
 

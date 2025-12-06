@@ -11,6 +11,16 @@
   </mat-card-header>
   
   <mat-card-content>
+    <div *ngIf="loading()" class="no-pedidos">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Carregando pedidos...</p>
+    </div>
+
+    <div *ngIf="!loading() && error()" class="no-pedidos">
+      <mat-icon>error</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+
     <div class="pedidos-container">
       <mat-expansion-panel *ngFor="let pedido of pedidos()" class="pedido-panel">
         <mat-expansion-panel-header>
@@ -117,7 +127,7 @@
       </mat-expansion-panel>
     </div>
 
-    <div *ngIf="pedidos().length === 0" class="no-pedidos">
+    <div *ngIf="!loading() && !error() && pedidos().length === 0" class="no-pedidos">
       <mat-icon>shopping_cart</mat-icon>
       <p>Nenhum pedido encontrado</p>
     </div>

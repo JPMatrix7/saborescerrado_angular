@@ -3,7 +3,8 @@ import { StatusPedido, FormaPagamento } from './enums.model';
 
 export interface ItemCompra {
   id?: number;
-  licor: Licor;
+  licor?: Licor;
+  licorId?: number;
   quantidade: number;
   precoUnitario: number;
   subtotal?: number; // Calculado: quantidade * precoUnitario

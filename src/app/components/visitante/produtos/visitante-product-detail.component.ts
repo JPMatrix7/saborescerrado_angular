@@ -129,10 +129,12 @@ export class VisitanteProductDetailComponent implements OnInit, OnDestroy {
   }
 
   private resolveImage(produto: Licor, index: number): string {
+    if (produto.imagem) {
+      if (index === 0) return produto.imagem;
+    }
     if (produto.imagens && produto.imagens.length > index) {
       return produto.imagens[index];
     }
-
     return fallbackImage(index);
   }
 
@@ -140,7 +142,9 @@ export class VisitanteProductDetailComponent implements OnInit, OnDestroy {
     if (produto.imagens && produto.imagens.length) {
       return produto.imagens;
     }
-
+    if (produto.imagem) {
+      return [produto.imagem];
+    }
     return [fallbackImage(0), fallbackImage(1), fallbackImage(2)];
   }
 

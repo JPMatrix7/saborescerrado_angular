@@ -26,3 +26,21 @@ mat-form-field {
   justify-content: flex-end;
   margin-top: 20px;
 }
+
+.upload-row {
+  align-items: center;
+}
+
+.image-preview img {
+  max-width: 180px;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.helper {
+  margin: 0 0 4px;
+  color: #4b5563;
+  font-size: 0.9rem;
+}

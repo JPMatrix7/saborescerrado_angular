@@ -11,10 +11,12 @@ import { AuthService } from '@services/auth.service';
 import { UsuarioService } from '@services/usuario.service';
 import { TelefoneService } from '@services/telefone.service';
 import { EnderecoService } from '@services/endereco.service';
+import { EstadoService } from '@services/estado.service';
+import { CidadeService } from '@services/cidade.service';
 import { Usuario } from '@models/usuario.model';
 import { UsuarioAuth } from '@models/auth.model';
 import { Telefone, TelefonePayload } from '@models/telefone.model';
-import { Endereco, EnderecoPayload } from '@models/endereco.model';
+import { Cidade, Endereco, EnderecoPayload, Estado } from '@models/endereco.model';
 import { CpfMaskDirective } from '../../../directives/cpf-mask.directive';
 
 @Component({
@@ -39,6 +41,8 @@ export class ProfileComponent implements OnInit {
   private usuarioService = inject(UsuarioService);
   private telefoneService = inject(TelefoneService);
   private enderecoService = inject(EnderecoService);
+  private estadoService = inject(EstadoService);
+  private cidadeService = inject(CidadeService);
   private router = inject(Router);
 
   user: UsuarioAuth | null = null;
@@ -77,8 +81,14 @@ export class ProfileComponent implements OnInit {
     complemento: [''],
     bairro: [''],
     cep: ['', [Validators.pattern(/^\d{8}$/)]],
-    cidadeId: ['']
+    estadoSigla: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
+    cidadeNome: [''],
+    cidadeId: ['', Validators.required]
   });
+
+  cidades: Cidade[] = [];
+  cidadesFiltradas: Cidade[] = [];
+  estadoSelecionado?: Estado;
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
@@ -128,6 +138,9 @@ export class ProfileComponent implements OnInit {
   }
 
   private patchEnderecoForm(endereco?: Endereco): void {
+    const estadoSigla = this.getEstadoSigla(endereco);
+    const cidadeNome = typeof endereco?.cidade === 'object' && endereco?.cidade ? endereco.cidade.nome : '';
+
     this.enderecoForm.patchValue({
       id: endereco?.id ?? null,
       logradouro: endereco?.logradouro || '',
@@ -135,8 +148,18 @@ export class ProfileComponent implements OnInit {
       complemento: endereco?.complemento || '',
       bairro: endereco?.bairro || '',
       cep: endereco?.cep || '',
+      estadoSigla: estadoSigla || '',
+      cidadeNome: cidadeNome || '',
       cidadeId: this.getCidadeId(endereco) || ''
     });
+
+    if (estadoSigla) {
+      this.onEstadoSiglaChange(estadoSigla, this.getCidadeId(endereco));
+    } else {
+      this.cidades = [];
+      this.cidadesFiltradas = [];
+      this.estadoSelecionado = undefined;
+    }
   }
 
   startEdit(): void {
@@ -353,8 +376,8 @@ export class ProfileComponent implements OnInit {
     const hasData = !!logradouro || !!numero || !!bairro || !!cep || !!cidadeId;
 
     if (!hasData) return null;
-    if (!logradouro || !numero || !bairro || !cep || !cidadeId) {
-      this.error = 'Preencha todos os campos de endereco (cidade, cep, logradouro, numero e bairro).';
+    if (!logradouro || !numero || !bairro || !cep || !cidadeId || !this.enderecoForm.value.estadoSigla) {
+      this.error = 'Preencha todos os campos de endereco (estado, cidade, cep, logradouro, numero e bairro).';
       return null;
     }
 
@@ -374,10 +397,87 @@ export class ProfileComponent implements OnInit {
     return endereco.cidade?.id ?? endereco.cidadeId;
   }
 
+  private getEstadoSigla(endereco?: Endereco): string | undefined {
+    if (!endereco) return undefined;
+    if (typeof endereco.cidade === 'object' && endereco.cidade && typeof endereco.cidade.estado === 'object') {
+      return endereco.cidade.estado?.sigla;
+    }
+    return undefined;
+  }
+
   private setReadOnlyMode(): void {
     this.isEditing = false;
     this.form.disable({ emitEvent: false });
     this.telefoneForm.disable({ emitEvent: false });
     this.enderecoForm.disable({ emitEvent: false });
+  }
+
+  onEstadoSiglaChange(siglaInput?: string, cidadeIdToSelect?: number | null): void {
+    const sigla = (siglaInput ?? this.enderecoForm.value.estadoSigla ?? '').toString().trim().toUpperCase();
+    this.enderecoForm.patchValue({ estadoSigla: sigla });
+
+    if (!sigla) {
+      this.estadoSelecionado = undefined;
+      this.cidades = [];
+      this.cidadesFiltradas = [];
+      this.enderecoForm.patchValue({ cidadeId: '', cidadeNome: '' });
+      return;
+    }
+
+    this.estadoService.getBySigla(sigla).subscribe({
+      next: (estado) => {
+        this.estadoSelecionado = estado;
+        this.loadCidadesByEstado(estado.id, cidadeIdToSelect ?? this.enderecoForm.value.cidadeId);
+      },
+      error: () => {
+        this.error = 'Estado nao encontrado. Informe uma sigla valida (ex: MG).';
+        this.estadoSelecionado = undefined;
+        this.cidades = [];
+        this.cidadesFiltradas = [];
+        this.enderecoForm.patchValue({ cidadeId: '', cidadeNome: '' });
+      }
+    });
+  }
+
+  onCidadeBuscaChange(): void {
+    const termo = (this.enderecoForm.value.cidadeNome || '').toString().toLowerCase();
+    this.cidadesFiltradas = this.cidades.filter(cidade =>
+      (cidade.nome || '').toLowerCase().includes(termo)
+    );
+  }
+
+  selecionarCidade(cidade: Cidade): void {
+    if (!cidade.id) return;
+    this.enderecoForm.patchValue({
+      cidadeId: cidade.id,
+      cidadeNome: cidade.nome
+    });
+  }
+
+  private loadCidadesByEstado(estadoId?: number, cidadeIdToSelect?: number | string): void {
+    if (!estadoId) {
+      this.cidades = [];
+      this.cidadesFiltradas = [];
+      return;
+    }
+
+    this.cidadeService.findByEstado(estadoId).subscribe({
+      next: (lista) => {
+        this.cidades = lista || [];
+        this.onCidadeBuscaChange();
+
+        const targetId = cidadeIdToSelect ? Number(cidadeIdToSelect) : undefined;
+        if (targetId) {
+          const cidade = this.cidades.find(c => c.id === targetId);
+          if (cidade) {
+            this.selecionarCidade(cidade);
+          }
+        }
+      },
+      error: () => {
+        this.cidades = [];
+        this.cidadesFiltradas = [];
+      }
+    });
   }
 }

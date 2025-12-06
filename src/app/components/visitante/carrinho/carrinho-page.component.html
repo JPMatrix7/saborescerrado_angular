@@ -1,0 +1,114 @@
+<div class="carrinho-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Meu Carrinho</h1>
+      <p class="subtitle">Revise seus itens e finalize sua compra</p>
+    </div>
+
+    <div class="carrinho-content" *ngIf="items().length; else emptyCart">
+      <div class="items-section">
+        <h2>Itens no carrinho ({{ items().length }})</h2>
+        
+        <div class="cart-item" *ngFor="let item of items()">
+          <div class="item-image">
+            <div class="placeholder-image">🍷</div>
+          </div>
+          
+          <div class="item-details">
+            <h3>{{ item.licor.nome }}</h3>
+            <p class="item-price">{{ formatCurrency(item.precoUnitario ?? item.licor.preco) }} / unidade</p>
+          </div>
+          
+          <div class="item-quantity">
+            <label>Quantidade</label>
+            <input
+              type="number"
+              min="1"
+              [value]="item.quantidade"
+              (change)="updateQty(item, $any($event.target).valueAsNumber || 1)"
+            />
+          </div>
+          
+          <div class="item-total">
+            <p class="label">Subtotal</p>
+            <p class="price">{{ formatCurrency((item.precoUnitario ?? item.licor.preco ?? 0) * item.quantidade) }}</p>
+          </div>
+          
+          <button type="button" class="btn-remove" (click)="remove(item)" title="Remover item">
+            🗑️
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-card">
+          <h2>Resumo do Pedido</h2>
+          
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ formatCurrency(total()) }}</span>
+          </div>
+          
+          <div class="summary-row">
+            <span>Frete</span>
+            <span class="free">Grátis</span>
+          </div>
+          
+          <div class="summary-divider"></div>
+          
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>{{ formatCurrency(total()) }}</span>
+          </div>
+
+          <div class="payment-section">
+            <label class="payment-label">
+              Forma de pagamento
+              <select [(ngModel)]="pagamento" class="payment-select">
+                <option [ngValue]="FormaPagamento.CARTAO">Cartão de Crédito</option>
+                <option [ngValue]="FormaPagamento.PIX">PIX</option>
+                <option [ngValue]="FormaPagamento.BOLETO">Boleto Bancário</option>
+              </select>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="pago" />
+              <span>Marcar como pago agora</span>
+            </label>
+          </div>
+
+          <button 
+            type="button" 
+            class="btn-checkout" 
+            (click)="checkout()" 
+            [disabled]="isCheckoutLoading"
+          >
+            {{ isCheckoutLoading ? 'Processando...' : 'Finalizar Compra' }}
+          </button>
+
+          <button 
+            type="button" 
+            class="btn-continue" 
+            (click)="continueShopping()"
+          >
+            Continuar Comprando
+          </button>
+
+          <p class="success-message" *ngIf="checkoutMessage">✓ {{ checkoutMessage }}</p>
+          <p class="error-message" *ngIf="checkoutError">✗ {{ checkoutError }}</p>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyCart>
+      <div class="empty-cart">
+        <div class="empty-icon">🛒</div>
+        <h2>Seu carrinho está vazio</h2>
+        <p>Adicione produtos para começar suas compras!</p>
+        <button type="button" class="btn-shop" (click)="continueShopping()">
+          Ver Produtos
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</div>

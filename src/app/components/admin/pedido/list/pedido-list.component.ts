@@ -7,18 +7,19 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Router } from '@angular/router';
-import { Compra, ItemCompra } from '@models/compra.model';
+import { Compra } from '@models/compra.model';
 import { StatusPedido, FormaPagamento } from '@models/enums.model';
+import { PedidoService } from '@services/pedido.service';
 
 @Component({
   selector: 'app-pedido-list',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatTableModule, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatCardModule, 
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
     MatChipsModule,
     MatExpansionModule
   ],
@@ -27,108 +28,36 @@ import { StatusPedido, FormaPagamento } from '@models/enums.model';
 })
 export class PedidoListComponent implements OnInit {
   pedidos = signal<Compra[]>([]);
+  loading = signal(false);
+  error = signal('');
   displayedColumns: string[] = ['id', 'dataCompra', 'valorTotal', 'status', 'formaPagamento', 'acoes'];
 
-  constructor(private router: Router, private location: Location) {}
+  constructor(
+    private router: Router,
+    private location: Location,
+    private pedidoService: PedidoService
+  ) {}
 
   ngOnInit(): void {
-    console.log('PedidoListComponent - ngOnInit chamado');
     this.loadPedidos();
   }
 
   loadPedidos(): void {
-    console.log('Carregando pedidos...');
-    // Dados estáticos para demonstração
-    const pedidosEstaticos: Compra[] = [
-      {
-        id: 1,
-        dataCompra: new Date('2024-01-15'),
-        status: StatusPedido.ENTREGUE,
-        formaPagamento: FormaPagamento.CARTAO,
-        valorTotal: 250.00,
-        codigoRastreio: 'BR123456789',
-        dataPrevista: new Date('2024-01-20'),
-        dataEntrega: new Date('2024-01-19'),
-        pago: true,
-        itens: [
-          {
-            id: 1,
-            licor: { id: 1, nome: 'Licor de Pequi', preco: 45.00 } as any,
-            quantidade: 2,
-            precoUnitario: 45.00,
-            subtotal: 90.00
-          },
-          {
-            id: 2,
-            licor: { id: 2, nome: 'Licor de Buriti', preco: 80.00 } as any,
-            quantidade: 2,
-            precoUnitario: 80.00,
-            subtotal: 160.00
-          }
-        ]
+    this.loading.set(true);
+    this.error.set('');
+
+    this.pedidoService.adminList(0, 100).subscribe({
+      next: (data) => {
+        const lista = Array.isArray(data) ? data : [];
+        this.pedidos.set(lista);
+        this.loading.set(false);
       },
-      {
-        id: 2,
-        dataCompra: new Date('2024-02-10'),
-        status: StatusPedido.ENVIADO,
-        formaPagamento: FormaPagamento.PIX,
-        valorTotal: 180.00,
-        codigoRastreio: 'BR987654321',
-        dataPrevista: new Date('2024-02-18'),
-        pago: true,
-        itens: [
-          {
-            id: 3,
-            licor: { id: 3, nome: 'Licor de Cagaita', preco: 60.00 } as any,
-            quantidade: 3,
-            precoUnitario: 60.00,
-            subtotal: 180.00
-          }
-        ]
-      },
-      {
-        id: 3,
-        dataCompra: new Date('2024-03-05'),
-        status: StatusPedido.PENDENTE,
-        formaPagamento: FormaPagamento.BOLETO,
-        valorTotal: 120.00,
-        pago: false,
-        itens: [
-          {
-            id: 4,
-            licor: { id: 4, nome: 'Licor de Jenipapo', preco: 40.00 } as any,
-            quantidade: 3,
-            precoUnitario: 40.00,
-            subtotal: 120.00
-          }
-        ]
-      },
-      {
-        id: 4,
-        dataCompra: new Date('2024-03-20'),
-        status: StatusPedido.APROVADO,
-        formaPagamento: FormaPagamento.CARTAO,
-        valorTotal: 350.00,
-        pago: true,
-        itens: [
-          {
-            id: 5,
-            licor: { id: 1, nome: 'Licor de Pequi', preco: 45.00 } as any,
-            quantidade: 3,
-            precoUnitario: 45.00,
-            subtotal: 135.00
-          },
-          {
-            id: 6,
-            licor: { id: 5, nome: 'Licor de Mangaba', preco: 65.00 } as any,
-            quantidade: 3,
-            precoUnitario: 65.00,
-            subtotal: 195.00
-          }
-        ]
+      error: (err: unknown) => {
+        this.loading.set(false);
+        this.pedidos.set([]);
+        this.error.set((err as any)?.error?.message || (err as any)?.message || 'Erro ao carregar pedidos.');
       }
-    ];
-    this.pedidos.set(pedidosEstaticos);
+    });
   }
 
   getStatusColor(status: StatusPedido): string {
@@ -169,7 +98,7 @@ export class PedidoListComponent implements OnInit {
   cancelarPedido(id: number): void {
     if (confirm('Deseja realmente cancelar este pedido?')) {
       console.log('Cancelando pedido:', id);
-      // Atualizar status localmente
+      // Atualizar status localmente enquanto não há fluxo de cancelamento no backend
       const pedidos = this.pedidos();
       const index = pedidos.findIndex(p => p.id === id);
       if (index !== -1) {

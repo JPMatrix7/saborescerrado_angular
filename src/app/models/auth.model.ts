@@ -11,12 +11,15 @@ export interface UsuarioAuth {
 }
 
 export interface LoginResponse {
+  tokenType: string;
   token: string;
+  expiresIn?: number;
   usuario: UsuarioAuth;
 }
 
 export interface CadastroPFRequest {
   nome: string;
+  sobrenome: string;
   email: string;
   senha: string;
   cpf: string;

@@ -1,0 +1,58 @@
+<section class="orders-page">
+  <div class="page-header">
+    <div>
+      <p class="section-chip">Meus pedidos</p>
+      <h1>Acompanhe suas compras</h1>
+      <p class="muted">Status, pagamento e rastreio em um só lugar.</p>
+    </div>
+    <div class="filters">
+      <label>
+        Status
+        <select [(ngModel)]="selectedStatus" (change)="onStatusChange(selectedStatus)">
+          <option *ngFor="let s of statuses" [ngValue]="s.value">{{ s.label }}</option>
+        </select>
+      </label>
+      <button class="ghost-button" type="button" (click)="loadPedidos()">Recarregar</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Carregando seus pedidos...</div>
+  <div *ngIf="error && !isLoading" class="error">{{ error }}</div>
+
+  <div class="orders-grid" *ngIf="!isLoading && !error">
+    <div *ngIf="!filtered().length" class="empty">
+      <p>Nenhum pedido encontrado para este filtro.</p>
+      <a class="primary-button" routerLink="/produtos">Ir às compras</a>
+    </div>
+
+    <article class="order-card" *ngFor="let pedido of filtered()">
+      <header class="order-header">
+        <div>
+          <p class="muted">Pedido #{{ pedido.id }}</p>
+          <p class="muted small">{{ pedido.dataCompra | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        <div class="tags">
+          <span class="{{ statusChip(pedido.status) }}">{{ pedido.status }}</span>
+          <span class="{{ pagoChip(pedido.pago) }}">{{ pedido.pago ? 'Pago' : 'Aguardando pagamento' }}</span>
+        </div>
+      </header>
+
+      <div class="order-body">
+        <div class="items">
+          <div class="item" *ngFor="let item of pedido.itens">
+            <div class="info">
+              <p class="title">{{ item.licor?.nome || ('Licor #' + item.licorId) }}</p>
+              <p class="muted">Qtd: {{ item.quantidade }} • {{ item.precoUnitario | currency:'BRL' }}</p>
+            </div>
+            <p class="price">{{ (item.precoUnitario || 0) * item.quantidade | currency:'BRL' }}</p>
+          </div>
+        </div>
+        <div class="summary">
+          <p>Total: <strong>{{ pedidoTotal(pedido) | currency:'BRL' }}</strong></p>
+          <p class="muted" *ngIf="pedido.codigoRastreio">Rastreio: {{ pedido.codigoRastreio }}</p>
+          <p class="muted" *ngIf="!pedido.codigoRastreio">Rastreio será adicionado quando o pedido for enviado.</p>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

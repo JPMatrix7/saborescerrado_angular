@@ -1,0 +1,46 @@
+<div class="cart-drawer" [class.open]="open">
+  <div class="cart-header">
+    <h3>🛒 Carrinho</h3>
+    <button type="button" class="close-btn" (click)="close.emit()" aria-label="Fechar">×</button>
+  </div>
+
+  <div class="cart-body" *ngIf="items().length; else emptyCart">
+    <p class="items-count">{{ items().length }} {{ items().length === 1 ? 'item' : 'itens' }} no carrinho</p>
+    
+    <div class="preview-items">
+      <div class="preview-item" *ngFor="let item of items().slice(0, 3)">
+        <div class="preview-icon">🍷</div>
+        <div class="preview-info">
+          <p class="preview-title">{{ item.licor.nome }}</p>
+          <p class="preview-details">
+            {{ item.quantidade }}x {{ formatCurrency(item.precoUnitario ?? item.licor.preco) }}
+          </p>
+        </div>
+        <button type="button" class="btn-remove-mini" (click)="remove(item)" title="Remover">🗑️</button>
+      </div>
+      <p class="more-items" *ngIf="items().length > 3">+ {{ items().length - 3 }} itens a mais</p>
+    </div>
+
+    <div class="cart-total">
+      <span>Total:</span>
+      <strong>{{ formatCurrency(total()) }}</strong>
+    </div>
+
+    <div class="cart-actions">
+      <button type="button" class="btn-view-cart" (click)="viewCart()">
+        Visualizar Carrinho
+      </button>
+      <button type="button" class="btn-continue-shopping" (click)="close.emit()">
+        Continuar Comprando
+      </button>
+    </div>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty">
+      <div class="empty-icon">🛒</div>
+      <p>Seu carrinho está vazio</p>
+      <button type="button" class="btn-shop" (click)="close.emit()">Explorar Produtos</button>
+    </div>
+  </ng-template>
+</div>

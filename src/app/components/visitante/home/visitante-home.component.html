@@ -17,18 +17,6 @@
       </div>
     </div>
   </div>
-
-  <div class="hero-visual">
-    <p class="hero-chip secondary">Catalogo conectado ao backend</p>
-    <h3>Todos os destaques sao carregados via API em tempo real.</h3>
-    <p>
-      Ao integrar com o backend voce garante disponibilidade, precos e imagens consistentes em todo o
-      ecossistema.
-    </p>
-    <p class="hero-helper">
-      Ajuste o endpoint diretamente no componente para apontar para o ambiente desejado.
-    </p>
-  </div>
 </section>
 
 <section class="featured-carousel" aria-label="Produtos em destaque">
@@ -136,7 +124,6 @@
     </ul>
     <div class="about-actions">
       <a routerLink="/produtos" class="primary-button">Ver catalogo completo</a>
-      <a routerLink="/produtos" fragment="kits" class="ghost-button">Conhecer kits corporativos</a>
     </div>
   </div>
 
@@ -162,11 +149,28 @@
     <h2>Depoimentos de quem vive a experiencia Sabores do Cerrado</h2>
   </header>
 
-  <div class="testimonial-grid">
-    <article class="testimonial-card" *ngFor="let testimonial of testimonials">
-      <p class="rating">&#9733; {{ testimonial.rating }}</p>
-      <p class="comment">&ldquo;{{ testimonial.comment }}&rdquo;</p>
-      <p class="author">{{ testimonial.name }} &middot; {{ testimonial.city }}</p>
-    </article>
-  </div>
+  <ng-container *ngIf="!testimonialsLoading(); else loadingTestimonials">
+    <div class="testimonial-grid" *ngIf="testimonials().length; else emptyTestimonials">
+      <article class="testimonial-card" *ngFor="let testimonial of testimonials()">
+        <p class="rating">&#9733; {{ formatRating(testimonial.nota ?? 0) }}</p>
+        <p class="comment">&ldquo;{{ testimonial.comentario }}&rdquo;</p>
+        <p class="author">
+          {{ testimonial.nome }}
+          <span *ngIf="testimonial.cidade"> &middot; {{ testimonial.cidade }}</span>
+        </p>
+      </article>
+    </div>
+  </ng-container>
+
+  <ng-template #loadingTestimonials>
+    <div class="empty-state">
+      <p>Carregando depoimentos cadastrados...</p>
+    </div>
+  </ng-template>
+
+  <ng-template #emptyTestimonials>
+    <div class="empty-state">
+      <p>{{ testimonialsError() || 'Nenhum depoimento cadastrado no momento.' }}</p>
+    </div>
+  </ng-template>
 </section>

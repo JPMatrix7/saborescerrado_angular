@@ -50,6 +50,7 @@ export interface Licor {
   descricao?: string;
   preco: number;
   estoque: number;
+  imagem?: string; // imagem principal retornada pelo backend
   imagens?: string[]; // URLs das imagens
   avaliacoes?: Avaliacao[];
   categorias?: Categoria[];

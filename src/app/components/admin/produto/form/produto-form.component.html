@@ -105,9 +105,31 @@
         </mat-form-field>
       </div>
 
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Imagem principal (URL retornada do upload)</mat-label>
+          <input matInput formControlName="imagem" required>
+          <mat-hint>Envie em /upload/imagem e cole a URL (ex: /uploads/abc.jpg)</mat-hint>
+          <mat-error *ngIf="produtoForm.get('imagem')?.invalid">Obrigatorio enviar a imagem principal.</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row upload-row">
+        <div>
+          <p class="helper">Upload direto para /upload/imagem (requer token ADMIN)</p>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+          <p *ngIf="isUploading">Enviando imagem...</p>
+        </div>
+        <div class="image-preview" *ngIf="imagemPreview">
+          <p>Preview</p>
+          <img [src]="imagemPreview" alt="Imagem principal" />
+        </div>
+      </div>
+
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>URL da Imagem</mat-label>
-        <input matInput formControlName="imagemUrl">
+        <mat-label>Galeria (URLs separadas por vírgula)</mat-label>
+        <textarea matInput formControlName="imagens" rows="2"></textarea>
+        <mat-hint>Inclua URLs adicionais se quiser galeria. A principal será adicionada automaticamente.</mat-hint>
       </mat-form-field>
 
       <div class="form-actions">

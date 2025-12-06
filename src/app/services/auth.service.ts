@@ -15,6 +15,8 @@ import {
 export class AuthService {
   private baseUrl = 'http://localhost:8080';
   private tokenKey = 'auth_token';
+  private tokenTypeKey = 'auth_token_type';
+  private tokenExpiresKey = 'auth_token_expires';
 
   constructor(private http: HttpClient) {}
 
@@ -22,6 +24,11 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, body).pipe(
       tap((response) => {
         this.saveToken(response.token);
+        this.saveTokenType(response.tokenType);
+        if (response.expiresIn) {
+          const expiresAt = Date.now() + response.expiresIn * 1000;
+          localStorage.setItem(this.tokenExpiresKey, String(expiresAt));
+        }
         this.saveUser(response.usuario);
       }),
       catchError((err) => {
@@ -32,7 +39,7 @@ export class AuthService {
         return throwError(() => ({ ...err, message }));
       })
     );
-  }
+  } 
 
   registerPF(payload: CadastroPFRequest): Observable<any> {
     return this.http.post(`${this.baseUrl}/usuario`, payload);
@@ -48,11 +55,23 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.tokenTypeKey);
+    localStorage.removeItem(this.tokenExpiresKey);
     localStorage.removeItem('auth_user');
   }
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
+  }
+
+  getTokenType(): string {
+    return localStorage.getItem(this.tokenTypeKey) || 'Bearer';
+  }
+
+  getAuthHeaderValue(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    return `${this.getTokenType()} ${token}`;
   }
 
   getUser(): UsuarioAuth | null {
@@ -89,5 +108,9 @@ export class AuthService {
 
   private saveToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
+  }
+
+  private saveTokenType(tokenType: string): void {
+    localStorage.setItem(this.tokenTypeKey, tokenType || 'Bearer');
   }
 }
