@@ -1,6 +1,6 @@
 <div class="auth-page">
   <div class="auth-header">
-    <a routerLink="/" class="back-link">← Voltar para início</a>
+    <a routerLink="/" class="back-link">← Voltar para inicio</a>
   </div>
   
   <mat-card class="auth-card">
@@ -10,40 +10,32 @@
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Nome</mat-label>
-          <input matInput formControlName="nome" />
-          <mat-error *ngIf="form.get('nome')?.hasError('required')">Nome obrigatório</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Sobrenome</mat-label>
-          <input matInput formControlName="sobrenome" />
-          <mat-error *ngIf="form.get('sobrenome')?.hasError('required')">Sobrenome obrigatório</mat-error>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome" />
+        <mat-error *ngIf="form.get('nome')?.hasError('required')">Nome obrigatorio</mat-error>
+      </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email" />
-        <mat-error *ngIf="form.get('email')?.hasError('required')">Email obrigatório</mat-error>
-        <mat-error *ngIf="form.get('email')?.hasError('email')">Formato inválido</mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('required')">Email obrigatorio</mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">Formato invalido</mat-error>
       </mat-form-field>
 
       <div class="grid">
         <mat-form-field appearance="outline">
           <mat-label>CPF</mat-label>
           <input matInput formControlName="cpf" placeholder="XXX.XXX.XXX-XX" appCpfMask />
-          <mat-error *ngIf="form.get('cpf')?.hasError('required')">CPF obrigatório</mat-error>
+          <mat-error *ngIf="form.get('cpf')?.hasError('required')">CPF obrigatorio</mat-error>
           <mat-error *ngIf="form.get('cpf')?.hasError('pattern')">Formato: XXX.XXX.XXX-XX</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Data de nascimento</mat-label>
           <input matInput type="date" formControlName="dataNascimento" [max]="maxDate" />
-          <mat-error *ngIf="form.get('dataNascimento')?.hasError('required')">Obrigatório</mat-error>
-          <mat-error *ngIf="form.get('dataNascimento')?.hasError('minAge')">É necessário ter 18 anos ou mais</mat-error>
+          <mat-error *ngIf="form.get('dataNascimento')?.hasError('required')">Obrigatorio</mat-error>
+          <mat-error *ngIf="form.get('dataNascimento')?.hasError('minAge')">Necessario ter 18 anos ou mais</mat-error>
         </mat-form-field>
       </div>
 
@@ -54,17 +46,17 @@
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="'Esconder senha'">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
-          <mat-error *ngIf="form.get('senha')?.hasError('required')">Senha obrigatória</mat-error>
-          <mat-error *ngIf="form.get('senha')?.hasError('minlength')">Mínimo de 6 caracteres</mat-error>
+          <mat-error *ngIf="form.get('senha')?.hasError('required')">Senha obrigatoria</mat-error>
+          <mat-error *ngIf="form.get('senha')?.hasError('minlength')">Minimo de 6 caracteres</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Confirmar senha</mat-label>
           <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmarSenha" />
-          <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Esconder confirmação de senha'">
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Esconder confirmacao de senha'">
             <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
-          <mat-error *ngIf="passwordsDoNotMatch()">As senhas não conferem</mat-error>
+          <mat-error *ngIf="passwordsDoNotMatch()">As senhas nao conferem</mat-error>
         </mat-form-field>
       </div>
 
@@ -73,7 +65,7 @@
       </button>
 
       <p class="helper">
-        Já tem conta?
+        Ja tem conta?
         <a routerLink="/login">Acesse aqui</a>
       </p>
 

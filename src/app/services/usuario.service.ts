@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Usuario, PessoaFisicaDTO } from '../models/usuario.model';
+import { Usuario, PessoaFisicaDTO, UsuarioCreateDTO } from '../models/usuario.model';
 import { Perfil } from '../models/enums.model';
 
 @Injectable({
@@ -10,8 +10,10 @@ import { Perfil } from '../models/enums.model';
 })
 export class UsuarioService {
   private baseUrl = 'http://localhost:8080/usuario';
+  private pfAdminUrl = 'http://localhost:8080/pessoafisica';
+  private pjAdminUrl = 'http://localhost:8080/pessoajuridica';
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   // Listar paginado
   getAll(page: number = 0, pageSize: number = 10): Observable<Usuario[]> {
@@ -27,17 +29,29 @@ export class UsuarioService {
       .pipe(map((usuario) => this.normalizeUsuario(usuario)));
   }
 
-  // Criar usuário
-  create(dto: PessoaFisicaDTO): Observable<Usuario> {
-    return this.httpClient.post<Usuario>(this.baseUrl, dto);
+  // Buscar dados do usuário logado
+  getMe(): Observable<Usuario> {
+    return this.httpClient
+      .get<Usuario>(`${this.baseUrl}/me`)
+      .pipe(map((usuario) => this.normalizeUsuario(usuario)));
   }
 
-  // Atualizar completo
+  // Criar PF via admin
+  create(dto: UsuarioCreateDTO): Observable<Usuario> {
+    return this.httpClient.post<Usuario>(this.pfAdminUrl, dto);
+  }
+
+  // Criar PJ via admin
+  createPJ(dto: any): Observable<any> {
+    return this.httpClient.post<any>(this.pjAdminUrl, dto);
+  }
+
+  // Atualizar completo (PUT /usuario/{id})
   update(id: number, dto: PessoaFisicaDTO): Observable<void> {
     return this.httpClient.put<void>(`${this.baseUrl}/${id}`, dto);
   }
 
-  // Atualizar perfis
+  // Atualizar perfis (ADMIN)
   updatePerfis(id: number, perfis: Perfil[]): Observable<void> {
     return this.httpClient.patch<void>(`${this.baseUrl}/perfis/${id}`, perfis);
   }

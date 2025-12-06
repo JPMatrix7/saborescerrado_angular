@@ -42,7 +42,6 @@ export class RegisterComponent {
 
   form: FormGroup = this.fb.group({
     nome: ['', [Validators.required, Validators.minLength(2)]],
-    sobrenome: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
     cpf: ['', [Validators.required, Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)]],
     dataNascimento: ['', [Validators.required, this.minAgeValidator(18)]],
@@ -63,16 +62,13 @@ export class RegisterComponent {
 
     const payload: CadastroPFRequest = {
       nome: this.form.value.nome!,
-      sobrenome: this.form.value.sobrenome!,
       email: this.form.value.email!,
       senha: this.form.value.senha!,
-      cpf: this.form.value.cpf!,
+      cpf: this.form.value.cpf!.replace(/\D/g, ''),
       dataNascimento: this.form.value.dataNascimento!,
       enderecosIds: [],
-      cartoesIds: [],
       telefonesIds: [],
-      favoritosIds: [],
-      perfis: []
+      cartoesIds: []
     };
 
     this.authService.registerPF(payload).subscribe({

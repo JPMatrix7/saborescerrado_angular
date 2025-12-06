@@ -17,16 +17,13 @@ export interface LoginResponse {
 
 export interface CadastroPFRequest {
   nome: string;
-  sobrenome: string;
   email: string;
   senha: string;
   cpf: string;
   dataNascimento: string;
   enderecosIds?: number[];
-  cartoesIds?: number[];
   telefonesIds?: number[];
-  favoritosIds?: number[];
-  perfis?: string[];
+  cartoesIds?: number[];
 }
 
 export interface CadastroPJRequest {

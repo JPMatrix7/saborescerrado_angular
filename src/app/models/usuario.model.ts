@@ -31,6 +31,9 @@ export interface UsuarioCreateDTO {
   dataNascimento: string; // ISO 8601: YYYY-MM-DD
   senha: string; // Obrigatório na criação
   perfis?: Perfil[]; // Opcional, default ["USER"]
+  enderecosIds?: number[];
+  telefonesIds?: number[];
+  cartoesIds?: number[];
 }
 
 // DTO para atualizar usuário (PUT /usuario/{id})
@@ -41,6 +44,9 @@ export interface UsuarioUpdateDTO {
   cpf: string;
   dataNascimento: string; // ISO 8601: YYYY-MM-DD
   senha?: string; // Opcional na edição
+  enderecosIds?: number[];
+  telefonesIds?: number[];
+  cartoesIds?: number[];
 }
 
 // Manter compatibilidade com código antigo

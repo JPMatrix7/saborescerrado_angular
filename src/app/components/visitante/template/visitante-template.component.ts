@@ -24,9 +24,7 @@ export class VisitanteTemplateComponent {
   protected navigation: VisitanteNavLink[] = [
     { label: 'Inicio', route: '/', fragment: 'hero' },
     { label: 'Produtos', route: '/produtos' },
-    { label: 'Categorias', route: '/', fragment: 'categorias' },
-    { label: 'Sobre', route: '/', fragment: 'sobre' },
-    { label: 'Avaliacoes', route: '/', fragment: 'depoimentos' }
+    { label: 'Categorias', route: '/', fragment: 'categorias' }
   ];
 
   toggleMenu(): void {

@@ -1,99 +1,68 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Compra } from '../models/compra.model';
 import { StatusPedido } from '../models/enums.model';
-import { AuthService } from '@services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PedidoService {
   private baseUrl = 'http://localhost:8080/compra';
+  private adminUrl = 'http://localhost:8080/compra/admin';
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient) {}
 
-  // Métodos no estilo do exemplo fornecido
-  getCompras(page?: number, pageSize?: number): Observable<Compra[]> {
-    let params = {};
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString()
-      };
+  // Usuário: lista suas compras (opcional filtro por status)
+  getCompras(status?: StatusPedido): Observable<Compra[]> {
+    if (status) {
+      return this.httpClient.get<Compra[]>(`${this.baseUrl}/status/${status}`);
     }
-
-    return this.httpClient.get<Compra[]>(this.baseUrl, { params });
+    return this.httpClient.get<Compra[]>(this.baseUrl);
   }
 
-  buscarPorId(id: string): Observable<Compra> {
+  // Usuário: detalhe da própria compra
+  buscarPorId(id: number): Observable<Compra> {
     return this.httpClient.get<Compra>(`${this.baseUrl}/${id}`);
   }
 
-  incluir(compra: any): Observable<Compra> {
-    if (this.authService.isAdmin()) {
-      return throwError(() => new Error('Administradores não podem criar compras.'));
-    }
+  // Usuário: cria compra (usa usuário do token)
+  incluir(compra: Partial<Compra>): Observable<Compra> {
     return this.httpClient.post<Compra>(this.baseUrl, compra);
   }
 
-  alterar(compra: any): Observable<any> {
-    if (this.authService.isAdmin()) {
-      return throwError(() => new Error('Administradores não podem alterar compras.'));
-    }
-    return this.httpClient.put<any>(`${this.baseUrl}/${compra.id}`, compra);
-  }
-
-  excluir(compra: Compra): Observable<any> {
-    if (this.authService.isAdmin()) {
-      return throwError(() => new Error('Administradores não podem excluir compras.'));
-    }
-    return this.httpClient.delete<any>(`${this.baseUrl}/${compra.id}`);
-  }
-
-  count(): Observable<number> {
-    return this.httpClient.get<number>(`${this.baseUrl}/count`);
-  }
-
-  // Métodos compatíveis com componentes existentes
-  findAll(): Observable<Compra[]> {
-    return this.getCompras();
-  }
-
-  findById(id: number): Observable<Compra> {
-    return this.httpClient.get<Compra>(`${this.baseUrl}/${id}`);
-  }
-
-  findByUsuario(usuarioId: number): Observable<Compra[]> {
-    return this.httpClient.get<Compra[]>(`${this.baseUrl}/usuario/${usuarioId}`);
-  }
-
-  create(compra: Compra): Observable<Compra> {
-    return this.incluir(compra);
-  }
-
-  update(id: number, compra: Compra): Observable<Compra> {
-    if (this.authService.isAdmin()) {
-      return throwError(() => new Error('Administradores não podem alterar compras.'));
-    }
+  // Usuário/Admin: altera status, rastreio ou itens conforme regra do backend
+  update(id: number, compra: Partial<Compra>): Observable<Compra> {
     return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, compra);
   }
 
-  updateStatus(id: number, status: StatusPedido): Observable<Compra> {
-    return this.httpClient.patch<Compra>(`${this.baseUrl}/${id}/status`, { status });
-  }
-
+  // Usuário/Admin: cancelar compra
   delete(id: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  // Métodos específicos da API
-  getByStatus(status: number): Observable<Compra[]> {
-    return this.httpClient.get<Compra[]>(`${this.baseUrl}/status/${status}`);
+  // Admin: lista paginada de todas as compras
+  adminList(page: number, pageSize: number): Observable<Compra[]> {
+    return this.httpClient.get<Compra[]>(`${this.adminUrl}/${page}/${pageSize}`);
   }
 
-  getByRastreio(codigo: string): Observable<Compra> {
-    return this.httpClient.get<Compra>(`${this.baseUrl}/rastreio/${codigo}`);
+  // Admin: detalhe por id
+  adminGetById(id: number): Observable<Compra> {
+    return this.httpClient.get<Compra>(`${this.adminUrl}/id/${id}`);
+  }
+
+  // Admin: atualizar status
+  updateStatus(id: number, status: StatusPedido): Observable<Compra> {
+    return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, { status });
+  }
+
+  // Admin: atualizar código de rastreio
+  updateRastreio(id: number, codigoRastreio: string): Observable<Compra> {
+    return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, { codigoRastreio });
+  }
+
+  // Usuário/Admin: buscar por status (alias explícito)
+  getByStatus(status: StatusPedido): Observable<Compra[]> {
+    return this.httpClient.get<Compra[]>(`${this.baseUrl}/status/${status}`);
   }
 }

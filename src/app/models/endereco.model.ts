@@ -22,4 +22,14 @@ export interface Endereco {
   bairro: string;
   cep: string;
   cidade?: Cidade;
+  cidadeId?: number;
+}
+
+export interface EnderecoPayload {
+  logradouro: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cep: string;
+  cidadeId: number;
 }
