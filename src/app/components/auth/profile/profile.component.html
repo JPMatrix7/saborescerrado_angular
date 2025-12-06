@@ -1,0 +1,87 @@
+<div class="profile-page" *ngIf="user; else loginPrompt">
+  <mat-card class="profile-card">
+    <div class="card-header">
+      <h1>Editar cadastro</h1>
+      <p>Atualize seu nome ou senha. Email não pode ser alterado.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="profile-form">
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" />
+          <mat-error *ngIf="form.get('nome')?.invalid">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sobrenome</mat-label>
+          <input matInput formControlName="sobrenome" />
+          <mat-error *ngIf="form.get('sobrenome')?.invalid">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" [disabled]="true" />
+      </mat-form-field>
+
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpf" [disabled]="true" appCpfMask />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data de nascimento</mat-label>
+          <input matInput type="date" formControlName="dataNascimento" [max]="maxDate" />
+          <mat-error *ngIf="form.get('dataNascimento')?.hasError('required')">Obrigatório</mat-error>
+          <mat-error *ngIf="form.get('dataNascimento')?.hasError('minAge')">É necessário ter 18 anos ou mais</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nova senha (opcional)</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="senha" placeholder="Deixe em branco para manter" />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="'Esconder senha'">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Confirmar nova senha</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmarSenha" placeholder="Repita a senha" />
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Esconder confirmação de senha'">
+            <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="button-group">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+          {{ loading ? 'Salvando...' : 'Salvar alterações' }}
+        </button>
+        
+        <button mat-stroked-button color="warn" type="button" (click)="logout()">
+          Sair da conta
+        </button>
+      </div>
+
+      <p *ngIf="message" class="success">{{ message }}</p>
+      <p *ngIf="error" class="error">{{ error }}</p>
+    </form>
+  </mat-card>
+</div>
+
+<ng-template #loginPrompt>
+  <div class="profile-page">
+    <mat-card class="profile-card">
+      <h2>Entre para editar seu cadastro</h2>
+      <p>Use sua conta para atualizar suas informações.</p>
+      <div class="prompt-actions">
+        <a mat-flat-button color="primary" routerLink="/login">Entrar</a>
+        <a mat-stroked-button color="primary" routerLink="/registro">Criar conta</a>
+      </div>
+    </mat-card>
+  </div>
+</ng-template>

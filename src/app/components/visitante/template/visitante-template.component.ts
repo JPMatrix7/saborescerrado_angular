@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '@services/auth.service';
 
 interface VisitanteNavLink {
   label: string;
@@ -16,6 +17,7 @@ interface VisitanteNavLink {
   styleUrl: './visitante-template.component.css'
 })
 export class VisitanteTemplateComponent {
+  private authService = inject(AuthService);
   protected readonly currentYear = new Date().getFullYear();
   protected menuOpen = signal(false);
 
@@ -33,5 +35,9 @@ export class VisitanteTemplateComponent {
 
   closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.isAuthenticated();
   }
 }

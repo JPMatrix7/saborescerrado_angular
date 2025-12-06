@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-admin-template',
@@ -29,7 +30,7 @@ export class AdminTemplateComponent {
   protected readonly currentYear = new Date().getFullYear();
   protected menuOpen = signal(false);
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
@@ -38,5 +39,16 @@ export class AdminTemplateComponent {
 
   toggleMenu(): void {
     this.menuOpen.update(value => !value);
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/perfil']);
+    this.menuOpen.set(false);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+    this.menuOpen.set(false);
   }
 }

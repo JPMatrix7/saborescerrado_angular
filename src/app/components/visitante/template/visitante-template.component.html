@@ -18,8 +18,23 @@
   </nav>
 
   <div class="header-actions">
-    <a class="ghost-button" routerLink="/produtos" (click)="closeMenu()">Catalogo</a>
-    <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Compre agora</a>
+    <div class="cta-actions">
+      <a class="ghost-button" routerLink="/produtos" (click)="closeMenu()">Catalogo</a>
+      <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Compre agora</a>
+    </div>
+    <div class="account-actions">
+      <a
+        *ngIf="!isLoggedIn(); else profileLink"
+        class="pill-button"
+        routerLink="/login"
+        (click)="closeMenu()"
+      >
+        Entrar / Cadastrar
+      </a>
+      <ng-template #profileLink>
+        <a class="pill-button" routerLink="/perfil" (click)="closeMenu()">Perfil</a>
+      </ng-template>
+    </div>
     <button class="menu-icon" type="button" (click)="toggleMenu()" aria-label="Abrir menu">
       <span></span>
       <span></span>
@@ -40,6 +55,12 @@
     >
       {{ link.label }}
     </a>
+    <ng-container *ngIf="!isLoggedIn(); else mobileLogged">
+      <a class="nav-link" routerLink="/login" (click)="closeMenu()">Entrar / Cadastrar</a>
+    </ng-container>
+    <ng-template #mobileLogged>
+      <a class="nav-link" routerLink="/perfil" (click)="closeMenu()">Perfil</a>
+    </ng-template>
     <a class="primary-button" routerLink="/produtos" (click)="closeMenu()">Ver produtos</a>
   </nav>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,11 +51,14 @@ export class HomeComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error('❌ Erro ao carregar produtos:', error);
-        console.error('Detalhes do erro:', {
-          status: error.status,
-          message: error.message,
-          url: error.url
-        });
+        if (error instanceof HttpErrorResponse) {
+          const httpError = error;
+          console.error('Detalhes do erro:', {
+            status: httpError.status,
+            message: httpError.message,
+            url: httpError.url
+          });
+        }
         this.totalProdutos.set(0);
       }
     });
@@ -77,11 +81,14 @@ export class HomeComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error('❌ Erro ao carregar usuários da API:', error);
-        console.error('Status:', error.status);
-        console.error('URL:', error.url);
+        if (error instanceof HttpErrorResponse) {
+          const httpError = error;
+          console.error('Status:', httpError.status);
+          console.error('URL:', httpError.url);
+        }
         
         // Fallback: usar dados estáticos se API falhar
-        console.log('📊 Usando dados estáticos de usuários');
+        console.log('Usando dados estáticos de usuários');
         this.totalUsuarios.set(3); // 3 usuários estáticos da lista
       }
     });

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Compra } from '../models/compra.model';
 import { StatusPedido } from '../models/enums.model';
+import { AuthService } from '@services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { StatusPedido } from '../models/enums.model';
 export class PedidoService {
   private baseUrl = 'http://localhost:8080/compra';
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
   // Métodos no estilo do exemplo fornecido
   getCompras(page?: number, pageSize?: number): Observable<Compra[]> {
@@ -31,14 +32,23 @@ export class PedidoService {
   }
 
   incluir(compra: any): Observable<Compra> {
+    if (this.authService.isAdmin()) {
+      return throwError(() => new Error('Administradores não podem criar compras.'));
+    }
     return this.httpClient.post<Compra>(this.baseUrl, compra);
   }
 
   alterar(compra: any): Observable<any> {
+    if (this.authService.isAdmin()) {
+      return throwError(() => new Error('Administradores não podem alterar compras.'));
+    }
     return this.httpClient.put<any>(`${this.baseUrl}/${compra.id}`, compra);
   }
 
   excluir(compra: Compra): Observable<any> {
+    if (this.authService.isAdmin()) {
+      return throwError(() => new Error('Administradores não podem excluir compras.'));
+    }
     return this.httpClient.delete<any>(`${this.baseUrl}/${compra.id}`);
   }
 
@@ -64,6 +74,9 @@ export class PedidoService {
   }
 
   update(id: number, compra: Compra): Observable<Compra> {
+    if (this.authService.isAdmin()) {
+      return throwError(() => new Error('Administradores não podem alterar compras.'));
+    }
     return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, compra);
   }
 

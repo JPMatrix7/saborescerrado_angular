@@ -59,7 +59,20 @@
 .header-actions {
   display: flex;
   align-items: center;
+  gap: 1rem;
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
+}
+
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-left: 1rem;
 }
 
 .ghost-button,
@@ -85,6 +98,21 @@
 
 .ghost-button:hover,
 .primary-button:hover {
+  transform: translateY(-1px);
+}
+
+.pill-button {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(64, 34, 24, 0.2);
+  font-weight: 600;
+  color: #402218;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.pill-button:hover {
+  background: rgba(64, 34, 24, 0.06);
   transform: translateY(-1px);
 }
 
@@ -171,7 +199,8 @@
 @media (max-width: 900px) {
   .desktop-nav,
   .ghost-button,
-  .primary-button {
+  .primary-button,
+  .account-actions {
     display: none;
   }
 

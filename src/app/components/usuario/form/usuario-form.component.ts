@@ -15,6 +15,7 @@ import { Usuario, PessoaFisicaDTO, UsuarioCreateDTO, UsuarioUpdateDTO } from '@m
 import { Perfil } from '@models/enums.model';
 import { CustomValidators } from '@validators/custom-validators';
 import { UsuarioService } from '@services/usuario.service';
+import { CpfMaskDirective } from '../../../directives/cpf-mask.directive';
 
 @Component({
   selector: 'app-usuario-form',
@@ -30,7 +31,8 @@ import { UsuarioService } from '@services/usuario.service';
     MatIconModule,
     MatSnackBarModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    CpfMaskDirective
   ],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.css'
@@ -265,19 +267,6 @@ export class UsuarioFormComponent implements OnInit {
       this.snackBar.open('Usuário não encontrado', 'OK', { duration: 3000 });
     } else {
       this.snackBar.open(mensagemPadrao, 'OK', { duration: 3000 });
-    }
-  }
-
-  // Função helper para formatar CPF enquanto digita
-  formatarCpf(event: any): void {
-    let valor = event.target.value.replace(/\D/g, '');
-    
-    if (valor.length <= 11) {
-      valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-      valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-      valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-      event.target.value = valor;
-      this.usuarioForm.patchValue({ cpf: valor }, { emitEvent: false });
     }
   }
 

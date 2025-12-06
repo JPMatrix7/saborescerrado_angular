@@ -1,0 +1,42 @@
+<div class="auth-page">
+  <div class="auth-header">
+    <a routerLink="/" class="back-link">← Voltar para início</a>
+  </div>
+  
+  <mat-card class="auth-card">
+    <div class="card-header">
+      <h1>Entrar</h1>
+      <p>Acesse sua conta</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="voce@email.com" />
+        <mat-error *ngIf="form.get('email')?.hasError('required')">Email obrigatório</mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">Formato inválido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Senha</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="senha" placeholder="••••••••" />
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="'Esconder senha'" [attr.aria-pressed]="!hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="form.get('senha')?.hasError('required')">Senha obrigatória</mat-error>
+        <mat-error *ngIf="form.get('senha')?.hasError('minlength')">Mínimo de 6 caracteres</mat-error>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+        {{ loading ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      <p class="helper">
+        Não tem conta?
+        <a routerLink="/registro">Crie seu acesso</a>
+      </p>
+
+      <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    </form>
+  </mat-card>
+</div>

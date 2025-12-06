@@ -5,8 +5,14 @@ import { catchError, throwError, retry } from 'rxjs';
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   // Adiciona headers apenas quando necessário
   let headers: { [key: string]: string } = {
-    'Accept': 'application/json'
+    Accept: 'application/json'
   };
+
+  // Inclui Authorization quando existir token salvo
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   // Só adiciona Content-Type para requisições com body (POST, PUT, PATCH)
   if (req.method !== 'GET' && req.method !== 'DELETE' && req.body) {

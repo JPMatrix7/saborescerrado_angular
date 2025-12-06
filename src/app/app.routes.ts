@@ -20,6 +20,10 @@ import { VisitanteTemplateComponent } from './components/visitante/template/visi
 import { VisitanteHomeComponent } from './components/visitante/home/visitante-home.component';
 import { VisitanteProductsComponent } from './components/visitante/produtos/visitante-products.component';
 import { VisitanteProductDetailComponent } from './components/visitante/produtos/visitante-product-detail.component';
+import { LoginComponent } from './components/auth/login/login.component';
+import { RegisterComponent } from './components/auth/register/register.component';
+import { ProfileComponent } from './components/auth/profile/profile.component';
+import { adminGuard, authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -28,13 +32,18 @@ export const routes: Routes = [
     children: [
       { path: '', component: VisitanteHomeComponent },
       { path: 'produtos', component: VisitanteProductsComponent },
-      { path: 'produtos/:id', component: VisitanteProductDetailComponent }
+      { path: 'produtos/:id', component: VisitanteProductDetailComponent },
+      { path: 'perfil', component: ProfileComponent, canMatch: [authGuard] }
     ]
   },
+  { path: 'login', component: LoginComponent },
+  { path: 'registro', component: RegisterComponent },
   {
     path: 'admin',
     component: AdminTemplateComponent,
+    canMatch: [adminGuard],
     children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'produtos', component: ProdutoListComponent },
       { path: 'produtos/form', component: ProdutoFormComponent },

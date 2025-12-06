@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -190,9 +191,14 @@ export class ProdutoFormComponent implements OnInit {
           },
           error: (error: unknown) => {
             console.error('❌ Erro ao atualizar produto:', error);
-            console.error('Status:', error.status);
-            console.error('Mensagem:', error.error);
-            alert(`Erro ao atualizar: ${error.error?.message || error.message}`);
+            if (error instanceof HttpErrorResponse) {
+              const httpError = error;
+              console.error('Status:', httpError.status);
+              console.error('Mensagem:', httpError.error);
+              alert(`Erro ao atualizar: ${httpError.error?.message || httpError.message}`);
+            } else {
+              alert('Erro ao atualizar');
+            }
           }
         });
       } else {
@@ -203,9 +209,14 @@ export class ProdutoFormComponent implements OnInit {
           },
           error: (error: unknown) => {
             console.error('❌ Erro ao criar produto:', error);
-            console.error('Status:', error.status);
-            console.error('Mensagem:', error.error);
-            alert(`Erro ao criar: ${error.error?.message || error.message}`);
+            if (error instanceof HttpErrorResponse) {
+              const httpError = error;
+              console.error('Status:', httpError.status);
+              console.error('Mensagem:', httpError.error);
+              alert(`Erro ao criar: ${httpError.error?.message || httpError.message}`);
+            } else {
+              alert('Erro ao criar');
+            }
           }
         });
       }

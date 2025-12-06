@@ -58,7 +58,7 @@
       <div class="nav-section">
         <p class="nav-section-title">Configurações</p>
         
-        <button mat-button class="nav-item">
+        <button mat-button class="nav-item" disabled title="Configuração indisponível no momento">
           <mat-icon>settings</mat-icon>
           <span>Configurações</span>
         </button>
@@ -82,16 +82,12 @@
       </button>
       
       <mat-menu #userMenu="matMenu">
-        <button mat-menu-item>
+        <button mat-menu-item (click)="goToProfile()">
           <mat-icon>person</mat-icon>
           <span>Perfil</span>
         </button>
-        <button mat-menu-item>
-          <mat-icon>settings</mat-icon>
-          <span>Configurações</span>
-        </button>
         <mat-divider></mat-divider>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Sair</span>
         </button>
