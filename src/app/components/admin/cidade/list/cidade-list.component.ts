@@ -54,7 +54,7 @@ export class CidadeListComponent implements OnInit {
   }
 
   getEstadoNome(cidade: Cidade): string {
-    return typeof cidade.estado === 'object' && cidade.estado ? cidade.estado.nome : '-';
+    return cidade.estado?.nome || cidade.estado?.sigla || (cidade.estadoId ? String(cidade.estadoId) : '-');
   }
 
   voltar(): void {

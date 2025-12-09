@@ -9,27 +9,22 @@ export interface Estado {
 export interface Cidade {
   id?: number;
   nome: string;
-  estado?: Estado | number; // Pode ser objeto ou ID
+  estadoId?: number;
+  estado?: Estado;
   ativo?: boolean;
   datainclusao?: Date;
 }
 
-export interface Endereco {
-  id?: number;
-  logradouro: string;
-  numero: string;
-  complemento?: string;
-  bairro: string;
-  cep: string;
-  cidade?: Cidade;
-  cidadeId?: number;
-}
-
-export interface EnderecoPayload {
+export interface EnderecoDTO {
   logradouro: string;
   numero: string;
   complemento?: string;
   bairro: string;
   cep: string;
   cidadeId: number;
+}
+
+export interface Endereco extends EnderecoDTO {
+  id?: number;
+  cidade?: Cidade;
 }

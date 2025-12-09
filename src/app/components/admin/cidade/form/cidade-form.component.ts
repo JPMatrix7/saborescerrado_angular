@@ -60,7 +60,7 @@ export class CidadeFormComponent implements OnInit {
   createForm(): void {
     this.cidadeForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
-      estado: [null, [Validators.required]]
+      estadoId: [null, [Validators.required]]
     });
   }
 
@@ -74,11 +74,9 @@ export class CidadeFormComponent implements OnInit {
   loadCidade(id: number): void {
     this.cidadeService.findById(id).subscribe({
       next: (cidade: Cidade) => {
-        // Se o estado vier como objeto, extrair apenas o ID
-        const estadoId = typeof cidade.estado === 'object' && cidade.estado ? cidade.estado.id : cidade.estado;
         this.cidadeForm.patchValue({
           nome: cidade.nome,
-          estado: estadoId
+          estadoId: cidade.estadoId ?? cidade.estado?.id ?? null
         });
       },
       error: (error: unknown) => console.error('Erro ao carregar cidade:', error)
@@ -89,7 +87,7 @@ export class CidadeFormComponent implements OnInit {
     if (this.cidadeForm.valid) {
       const cidade: Cidade = {
         nome: this.cidadeForm.value.nome,
-        estado: this.cidadeForm.value.estado // Envia apenas o ID do estado
+        estadoId: this.cidadeForm.value.estadoId
       };
 
       if (this.isEditMode && this.cidadeId) {

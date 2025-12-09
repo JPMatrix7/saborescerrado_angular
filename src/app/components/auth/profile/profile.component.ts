@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { UsuarioService } from '@services/usuario.service';
@@ -16,8 +17,9 @@ import { CidadeService } from '@services/cidade.service';
 import { Usuario } from '@models/usuario.model';
 import { UsuarioAuth } from '@models/auth.model';
 import { Telefone, TelefonePayload } from '@models/telefone.model';
-import { Cidade, Endereco, EnderecoPayload, Estado } from '@models/endereco.model';
+import { Cidade, Endereco, EnderecoDTO, Estado } from '@models/endereco.model';
 import { CpfMaskDirective } from '../../../directives/cpf-mask.directive';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -30,6 +32,7 @@ import { CpfMaskDirective } from '../../../directives/cpf-mask.directive';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
     CpfMaskDirective
   ],
   templateUrl: './profile.component.html',
@@ -81,17 +84,18 @@ export class ProfileComponent implements OnInit {
     complemento: [''],
     bairro: [''],
     cep: ['', [Validators.pattern(/^\d{8}$/)]],
-    estadoSigla: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-    cidadeNome: [''],
-    cidadeId: ['', Validators.required]
+    estadoId: [null, Validators.required],
+    cidadeId: [null, Validators.required]
   });
 
+  estados: Estado[] = [];
   cidades: Cidade[] = [];
   cidadesFiltradas: Cidade[] = [];
   estadoSelecionado?: Estado;
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
+    this.loadEstadosECidades();
     this.loadProfile();
   }
 
@@ -110,6 +114,7 @@ export class ProfileComponent implements OnInit {
       },
       error: (err) => {
         this.loadingProfile = false;
+        this.handleUnauthorized(err);
         this.error =
           (err as any)?.error?.message || (err as any)?.message || 'Erro ao carregar dados do perfil.';
         this.setReadOnlyMode();
@@ -138,8 +143,8 @@ export class ProfileComponent implements OnInit {
   }
 
   private patchEnderecoForm(endereco?: Endereco): void {
-    const estadoSigla = this.getEstadoSigla(endereco);
-    const cidadeNome = typeof endereco?.cidade === 'object' && endereco?.cidade ? endereco.cidade.nome : '';
+    const cidadeId = this.getCidadeId(endereco);
+    const estadoId = this.getEstadoId(endereco);
 
     this.enderecoForm.patchValue({
       id: endereco?.id ?? null,
@@ -148,18 +153,11 @@ export class ProfileComponent implements OnInit {
       complemento: endereco?.complemento || '',
       bairro: endereco?.bairro || '',
       cep: endereco?.cep || '',
-      estadoSigla: estadoSigla || '',
-      cidadeNome: cidadeNome || '',
-      cidadeId: this.getCidadeId(endereco) || ''
+      estadoId: estadoId ?? null,
+      cidadeId: cidadeId ?? null
     });
 
-    if (estadoSigla) {
-      this.onEstadoSiglaChange(estadoSigla, this.getCidadeId(endereco));
-    } else {
-      this.cidades = [];
-      this.cidadesFiltradas = [];
-      this.estadoSelecionado = undefined;
-    }
+    this.onEstadoChange(estadoId, cidadeId, true);
   }
 
   startEdit(): void {
@@ -266,7 +264,8 @@ export class ProfileComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.savingTelefone = false;
-        this.error = (err as any)?.message || 'Erro ao salvar telefone.';
+        this.handleUnauthorized(err);
+        this.error = (err as any)?.friendlyMessage || (err as any)?.message || 'Erro ao salvar telefone.';
       }
     });
   }
@@ -309,7 +308,8 @@ export class ProfileComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.savingEndereco = false;
-        this.error = (err as any)?.message || 'Erro ao salvar endereco.';
+        this.handleUnauthorized(err);
+        this.error = (err as any)?.friendlyMessage || (err as any)?.message || 'Erro ao salvar endereco.';
       }
     });
   }
@@ -326,7 +326,8 @@ export class ProfileComponent implements OnInit {
 
   private handleError(err: unknown): void {
     this.loading = false;
-    this.error = (err as any)?.message || 'Erro ao atualizar dados.';
+    this.handleUnauthorized(err);
+    this.error = (err as any)?.friendlyMessage || (err as any)?.message || 'Erro ao atualizar dados.';
   }
 
   logout(): void {
@@ -370,13 +371,13 @@ export class ProfileComponent implements OnInit {
     return { codigoArea, numero };
   }
 
-  private buildEnderecoPayload(): EnderecoPayload | null {
-    const { logradouro, numero, complemento, bairro, cidadeId } = this.enderecoForm.value;
+  private buildEnderecoPayload(): EnderecoDTO | null {
+    const { logradouro, numero, complemento, bairro, cidadeId, estadoId } = this.enderecoForm.value;
     const cep = (this.enderecoForm.value.cep || '').toString().replace(/\D/g, '');
-    const hasData = !!logradouro || !!numero || !!bairro || !!cep || !!cidadeId;
+    const hasData = !!logradouro || !!numero || !!bairro || !!cep || !!cidadeId || !!estadoId;
 
     if (!hasData) return null;
-    if (!logradouro || !numero || !bairro || !cep || !cidadeId || !this.enderecoForm.value.estadoSigla) {
+    if (!logradouro || !numero || !bairro || !cep || !cidadeId || !estadoId) {
       this.error = 'Preencha todos os campos de endereco (estado, cidade, cep, logradouro, numero e bairro).';
       return null;
     }
@@ -393,15 +394,14 @@ export class ProfileComponent implements OnInit {
 
   private getCidadeId(endereco?: Endereco): number | undefined {
     if (!endereco) return undefined;
-    if (typeof endereco.cidade === 'number') return endereco.cidade;
-    return endereco.cidade?.id ?? endereco.cidadeId;
+    if (endereco.cidade?.id) return endereco.cidade.id;
+    return endereco.cidadeId;
   }
 
-  private getEstadoSigla(endereco?: Endereco): string | undefined {
+  private getEstadoId(endereco?: Endereco): number | undefined {
     if (!endereco) return undefined;
-    if (typeof endereco.cidade === 'object' && endereco.cidade && typeof endereco.cidade.estado === 'object') {
-      return endereco.cidade.estado?.sigla;
-    }
+    if (endereco.cidade?.estadoId) return endereco.cidade.estadoId;
+    if (endereco.cidade?.estado?.id) return endereco.cidade.estado.id;
     return undefined;
   }
 
@@ -412,72 +412,72 @@ export class ProfileComponent implements OnInit {
     this.enderecoForm.disable({ emitEvent: false });
   }
 
-  onEstadoSiglaChange(siglaInput?: string, cidadeIdToSelect?: number | null): void {
-    const sigla = (siglaInput ?? this.enderecoForm.value.estadoSigla ?? '').toString().trim().toUpperCase();
-    this.enderecoForm.patchValue({ estadoSigla: sigla });
+  private loadEstadosECidades(): void {
+    forkJoin({
+      estados: this.estadoService.findAll(),
+      cidades: this.cidadeService.findAll()
+    }).subscribe({
+      next: ({ estados, cidades }) => {
+        this.estados = estados || [];
+        this.cidades = (cidades || []).map((cidade) => ({
+          ...cidade,
+          estadoId: cidade.estadoId ?? cidade.estado?.id
+        }));
 
-    if (!sigla) {
-      this.estadoSelecionado = undefined;
-      this.cidades = [];
-      this.cidadesFiltradas = [];
-      this.enderecoForm.patchValue({ cidadeId: '', cidadeNome: '' });
-      return;
-    }
-
-    this.estadoService.getBySigla(sigla).subscribe({
-      next: (estado) => {
-        this.estadoSelecionado = estado;
-        this.loadCidadesByEstado(estado.id, cidadeIdToSelect ?? this.enderecoForm.value.cidadeId);
-      },
-      error: () => {
-        this.error = 'Estado nao encontrado. Informe uma sigla valida (ex: MG).';
-        this.estadoSelecionado = undefined;
-        this.cidades = [];
-        this.cidadesFiltradas = [];
-        this.enderecoForm.patchValue({ cidadeId: '', cidadeNome: '' });
-      }
-    });
-  }
-
-  onCidadeBuscaChange(): void {
-    const termo = (this.enderecoForm.value.cidadeNome || '').toString().toLowerCase();
-    this.cidadesFiltradas = this.cidades.filter(cidade =>
-      (cidade.nome || '').toLowerCase().includes(termo)
-    );
-  }
-
-  selecionarCidade(cidade: Cidade): void {
-    if (!cidade.id) return;
-    this.enderecoForm.patchValue({
-      cidadeId: cidade.id,
-      cidadeNome: cidade.nome
-    });
-  }
-
-  private loadCidadesByEstado(estadoId?: number, cidadeIdToSelect?: number | string): void {
-    if (!estadoId) {
-      this.cidades = [];
-      this.cidadesFiltradas = [];
-      return;
-    }
-
-    this.cidadeService.findByEstado(estadoId).subscribe({
-      next: (lista) => {
-        this.cidades = lista || [];
-        this.onCidadeBuscaChange();
-
-        const targetId = cidadeIdToSelect ? Number(cidadeIdToSelect) : undefined;
-        if (targetId) {
-          const cidade = this.cidades.find(c => c.id === targetId);
-          if (cidade) {
-            this.selecionarCidade(cidade);
-          }
+        const { estadoId, cidadeId } = this.enderecoForm.value;
+        if (estadoId) {
+          this.onEstadoChange(estadoId, cidadeId, true);
         }
       },
-      error: () => {
-        this.cidades = [];
-        this.cidadesFiltradas = [];
+      error: (err: unknown) => {
+        this.handleUnauthorized(err);
+        this.error =
+          (err as any)?.friendlyMessage ||
+          (err as any)?.message ||
+          'Erro ao carregar estados e cidades.';
       }
     });
+  }
+
+  onEstadoChange(estadoId?: number | null, cidadeIdToSelect?: number | null, keepCidade = false): void {
+    const parsedEstadoId = estadoId ? Number(estadoId) : undefined;
+
+    if (!parsedEstadoId) {
+      this.estadoSelecionado = undefined;
+      this.cidadesFiltradas = [];
+      if (!keepCidade) {
+        this.enderecoForm.patchValue({ cidadeId: null });
+      }
+      return;
+    }
+
+    this.estadoSelecionado = this.estados.find((estado) => estado.id === parsedEstadoId);
+    this.cidadesFiltradas = this.filtrarCidadesPorEstado(parsedEstadoId);
+
+    if (cidadeIdToSelect) {
+      const cidadeEncontrada = this.cidadesFiltradas.find((cidade) => cidade.id === Number(cidadeIdToSelect));
+      this.enderecoForm.patchValue({ cidadeId: cidadeEncontrada?.id ?? null });
+    } else if (!keepCidade) {
+      this.enderecoForm.patchValue({ cidadeId: null });
+    }
+  }
+
+  onCidadeChange(cidadeId: number): void {
+    this.enderecoForm.patchValue({ cidadeId });
+  }
+
+  private filtrarCidadesPorEstado(estadoId?: number): Cidade[] {
+    if (!estadoId) return [];
+    return this.cidades.filter((cidade) => {
+      const cidadeEstadoId = cidade.estadoId ?? cidade.estado?.id;
+      return cidadeEstadoId === estadoId;
+    });
+  }
+
+  private handleUnauthorized(err: any): void {
+    if (err?.status === 401) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    }
   }
 }

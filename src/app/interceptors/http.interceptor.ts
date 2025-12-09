@@ -1,10 +1,12 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, retry, throwError } from 'rxjs';
 import { AuthService } from '@services/auth.service';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
 
   // Preserva headers existentes e acrescenta os obrigatórios
   let headers = req.headers.set('Accept', 'application/json');
@@ -42,6 +44,12 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         console.error('Erro no cliente:', error.error.message);
       } else {
         switch (error.status) {
+          case 401:
+            authService.logout();
+            router.navigate(['/login']);
+            errorMessage = 'Sessao expirada. Faca login novamente.';
+            console.error('Erro 401 - Unauthorized:', error.url);
+            break;
           case 400:
             errorMessage =
               error.error?.message || 'Requisição inválida. Verifique os dados enviados.';
