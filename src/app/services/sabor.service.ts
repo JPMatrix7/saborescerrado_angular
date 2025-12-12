@@ -8,21 +8,16 @@ import { Sabor } from '../models/licor.model';
 })
 export class SaborService {
   private baseUrl = 'http://localhost:8080/sabor';
+  private adminUrl = 'http://localhost:8080/sabor/admin';
 
   constructor(private httpClient: HttpClient) { }
 
   // Métodos no estilo do exemplo fornecido
   getSabores(page?: number, pageSize?: number): Observable<Sabor[]> {
-    let params = {};
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString()
-      };
+    if (page !== undefined && pageSize !== undefined) {
+      return this.httpClient.get<Sabor[]>(`${this.adminUrl}/${page}/${pageSize}`);
     }
-
-    return this.httpClient.get<Sabor[]>(this.baseUrl, { params });
+    return this.httpClient.get<Sabor[]>(this.baseUrl);
   }
 
   buscarPorId(id: string): Observable<Sabor> {

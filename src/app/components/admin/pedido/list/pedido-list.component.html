@@ -8,6 +8,16 @@
         <span>Pedidos</span>
       </div>
     </mat-card-title>
+    <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+      <label>
+        Filtro status
+        <select [(ngModel)]="statusFiltro">
+          <option [ngValue]="'todos'">Todos</option>
+          <option *ngFor="let st of statusOptions" [ngValue]="st">{{ st }}</option>
+        </select>
+      </label>
+      <button mat-stroked-button color="primary" (click)="loadPedidos()">Recarregar</button>
+    </div>
   </mat-card-header>
   
   <mat-card-content>
@@ -22,7 +32,7 @@
     </div>
 
     <div class="pedidos-container">
-      <mat-expansion-panel *ngFor="let pedido of pedidos()" class="pedido-panel">
+      <mat-expansion-panel *ngFor="let pedido of pedidosFiltrados()" class="pedido-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>
             <div class="panel-title-content">
@@ -60,18 +70,6 @@
                   </mat-chip>
                 </span>
               </div>
-              <div class="info-item" *ngIf="pedido.codigoRastreio">
-                <strong>Código de Rastreio:</strong>
-                <span>{{ pedido.codigoRastreio }}</span>
-              </div>
-              <div class="info-item" *ngIf="pedido.dataPrevista">
-                <strong>Previsão de Entrega:</strong>
-                <span>{{ pedido.dataPrevista | date: 'dd/MM/yyyy' }}</span>
-              </div>
-              <div class="info-item" *ngIf="pedido.dataEntrega">
-                <strong>Data de Entrega:</strong>
-                <span>{{ pedido.dataEntrega | date: 'dd/MM/yyyy' }}</span>
-              </div>
             </div>
           </div>
 
@@ -81,7 +79,7 @@
               
               <ng-container matColumnDef="produto">
                 <th mat-header-cell *matHeaderCellDef>Produto</th>
-                <td mat-cell *matCellDef="let item">{{ item.licor.nome }}</td>
+                <td mat-cell *matCellDef="let item">{{ item.licor?.nome || ('Produto #' + item.licorId) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="quantidade">
@@ -91,12 +89,12 @@
 
               <ng-container matColumnDef="precoUnitario">
                 <th mat-header-cell *matHeaderCellDef>Preço Unit.</th>
-                <td mat-cell *matCellDef="let item">R$ {{ item.precoUnitario.toFixed(2) }}</td>
+                <td mat-cell *matCellDef="let item">R$ {{ (item.precoUnitario ?? 0).toFixed(2) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="subtotal">
                 <th mat-header-cell *matHeaderCellDef>Subtotal</th>
-                <td mat-cell *matCellDef="let item">R$ {{ item.subtotal!.toFixed(2) }}</td>
+                <td mat-cell *matCellDef="let item">R$ {{ (item.subtotal ?? 0).toFixed(2) }}</td>
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="['produto', 'quantidade', 'precoUnitario', 'subtotal']"></tr>
@@ -110,11 +108,21 @@
           </div>
 
           <div class="actions-section">
+            <div class="admin-control">
+              <h4>Status</h4>
+              <select [(ngModel)]="statusForm[pedido.id!]">
+                <option *ngFor="let st of statusOptions" [ngValue]="st">{{ st }}</option>
+              </select>
+              <button mat-raised-button color="primary" (click)="salvarStatus(pedido)">
+                <mat-icon>sync</mat-icon>
+                Atualizar status
+              </button>
+            </div>
+
             <button 
               mat-raised-button 
               color="warn" 
-              (click)="cancelarPedido(pedido.id!)"
-              [disabled]="pedido.status === 'CANCELADO' || pedido.status === 'ENTREGUE'">
+              (click)="cancelarPedido(pedido.id!)">
               <mat-icon>cancel</mat-icon>
               Cancelar Pedido
             </button>
@@ -127,7 +135,7 @@
       </mat-expansion-panel>
     </div>
 
-    <div *ngIf="!loading() && !error() && pedidos().length === 0" class="no-pedidos">
+    <div *ngIf="!loading() && !error() && pedidosFiltrados().length === 0" class="no-pedidos">
       <mat-icon>shopping_cart</mat-icon>
       <p>Nenhum pedido encontrado</p>
     </div>

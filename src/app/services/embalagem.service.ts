@@ -8,6 +8,7 @@ import { Embalagem } from '../models/licor.model';
 })
 export class EmbalagemService {
   private baseUrl = 'http://localhost:8080/embalagem';
+  private adminUrl = 'http://localhost:8080/embalagem/admin';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -15,8 +16,20 @@ export class EmbalagemService {
     return this.httpClient.get<Embalagem[]>(this.baseUrl);
   }
 
+  findAllAdmin(page: number = 0, pageSize: number = 100): Observable<Embalagem[]> {
+    return this.httpClient.get<Embalagem[]>(`${this.adminUrl}/${page}/${pageSize}`);
+  }
+
+  count(): Observable<number> {
+    return this.httpClient.get<number>(`${this.baseUrl}/count`);
+  }
+
   findById(id: number): Observable<Embalagem> {
     return this.httpClient.get<Embalagem>(`${this.baseUrl}/${id}`);
+  }
+
+  findByIdAdmin(id: number): Observable<Embalagem> {
+    return this.httpClient.get<Embalagem>(`${this.adminUrl}/id/${id}`);
   }
 
   create(embalagem: Embalagem): Observable<Embalagem> {

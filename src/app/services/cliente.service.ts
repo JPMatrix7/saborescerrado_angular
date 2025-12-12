@@ -13,16 +13,10 @@ export class ClienteService {
 
   // Métodos no estilo do exemplo fornecido
   getUsuarios(page?: number, pageSize?: number): Observable<PessoaFisica[]> {
-    let params = {};
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString()
-      };
+    if (page !== undefined && pageSize !== undefined) {
+      return this.httpClient.get<PessoaFisica[]>(`${this.baseUrl}/${page}/${pageSize}`);
     }
-
-    return this.httpClient.get<PessoaFisica[]>(this.baseUrl, { params });
+    return this.httpClient.get<PessoaFisica[]>(`${this.baseUrl}`);
   }
 
   buscarPorId(id: string): Observable<PessoaFisica> {
@@ -55,7 +49,7 @@ export class ClienteService {
   }
 
   findById(id: number): Observable<PessoaFisica> {
-    return this.httpClient.get<PessoaFisica>(`${this.baseUrl}/${id}`);
+    return this.httpClient.get<PessoaFisica>(`${this.baseUrl}/id/${id}`);
   }
 
   findByCpf(cpf: string): Observable<PessoaFisica> {

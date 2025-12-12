@@ -7,7 +7,7 @@ import { ProdutoService } from '@services/produto.service';
 import { fallbackImage } from '../shared/image-fallbacks';
 import { CarrinhoService } from '@services/carrinho.service';
 
-type CatalogProduct = Licor;
+type Cataloglicor = Licor;
 
 interface CatalogFilters {
   search: string;
@@ -30,9 +30,9 @@ export class VisitanteProductsComponent implements OnInit {
   isLoading = true;
   loadError = false;
   errorMessage = '';
-  allProducts: CatalogProduct[] = [];
-  filteredProducts: CatalogProduct[] = [];
-  visibleProducts: CatalogProduct[] = [];
+  allProducts: Cataloglicor[] = [];
+  filteredProducts: Cataloglicor[] = [];
+  visibleProducts: Cataloglicor[] = [];
 
   filters: CatalogFilters = {
     search: '',
@@ -70,14 +70,14 @@ export class VisitanteProductsComponent implements OnInit {
     let items = [...this.allProducts];
     const search = this.filters.search.trim().toLowerCase();
 
-    items = items.filter(product => {
-      const categories = this.getCategories(product);
-      const flavor = this.getFlavor(product);
-      const type = this.getType(product);
-      const rating = this.getRating(product);
-      const preco = typeof product.preco === 'number' ? product.preco : 0;
+    items = items.filter(licor => {
+      const categories = this.getCategories(licor);
+      const flavor = this.getFlavor(licor);
+      const type = this.getType(licor);
+      const rating = this.getRating(licor);
+      const preco = typeof licor.preco === 'number' ? licor.preco : 0;
 
-      const matchesSearch = !search || product.nome?.toLowerCase().includes(search);
+      const matchesSearch = !search || licor.nome?.toLowerCase().includes(search);
       const matchesCategory =
         this.filters.category === 'todos' || categories.includes(this.filters.category);
       const matchesPrice = preco >= this.filters.minPrice && preco <= this.filters.maxPrice;
@@ -115,8 +115,8 @@ export class VisitanteProductsComponent implements OnInit {
     return this.currentPage * this.pageSize < this.filteredProducts.length;
   }
 
-  trackById(_: number, product: CatalogProduct): number | undefined {
-    return product.id;
+  trackById(_: number, licor: Cataloglicor): number | undefined {
+    return licor.id;
   }
 
   formatCurrency(value?: number): string {
@@ -127,52 +127,52 @@ export class VisitanteProductsComponent implements OnInit {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
-  productImage(product: CatalogProduct, index: number): string {
-    if (product.imagem) return product.imagem;
-    if (product.imagens && product.imagens.length) return product.imagens[0];
+  productImage(licor: Cataloglicor, index: number): string {
+    if (licor.imagem) return licor.imagem;
+    if (licor.imagens && licor.imagens.length) return licor.imagens[0];
     return fallbackImage(index);
   }
 
-  stockLabel(product: CatalogProduct): string {
-    if (typeof product.estoque === 'number') {
-      return `${product.estoque} em estoque`;
+  stockLabel(licor: Cataloglicor): string {
+    if (typeof licor.estoque === 'number') {
+      return `${licor.estoque} em estoque`;
     }
 
     return 'Estoque sob consulta';
   }
 
-  displayRating(product: CatalogProduct): string {
-    return this.getRating(product).toFixed(1);
+  displayRating(licor: Cataloglicor): string {
+    return this.getRating(licor).toFixed(1);
   }
 
-  getCategories(product: CatalogProduct): string[] {
-    return (product.categorias ?? [])
+  getCategories(licor: Cataloglicor): string[] {
+    return (licor.categorias ?? [])
       .map(categoria => categoria.nome || categoria.descricao || '')
       .filter(Boolean);
   }
 
-  getFlavor(product: CatalogProduct): string {
-    return product.sabor?.nome ?? 'Autorais';
+  getFlavor(licor: Cataloglicor): string {
+    return licor.sabor?.nome ?? 'Autorais';
   }
 
-  getType(product: CatalogProduct): string {
-    if (!product.tipo) {
+  getType(licor: Cataloglicor): string {
+    if (!licor.tipo) {
       return 'Especial';
     }
-    return product.tipo
+    return licor.tipo
       .toString()
       .toLowerCase()
       .replace(/_/g, ' ')
       .replace(/(^|\s)\S/g, char => char.toUpperCase());
   }
 
-  getRating(product: CatalogProduct): number {
-    if (product.estrelas) {
-      return product.estrelas;
+  getRating(licor: Cataloglicor): number {
+    if (licor.estrelas) {
+      return licor.estrelas;
     }
-    if (product.avaliacoes && product.avaliacoes.length) {
-      const total = product.avaliacoes.reduce((sum, avaliacao) => sum + (avaliacao.estrelas || 0), 0);
-      return total / product.avaliacoes.length;
+    if (licor.avaliacoes && licor.avaliacoes.length) {
+      const total = licor.avaliacoes.reduce((sum, avaliacao) => sum + (avaliacao.estrelas || 0), 0);
+      return total / licor.avaliacoes.length;
     }
     return 0;
   }
@@ -192,12 +192,12 @@ export class VisitanteProductsComponent implements OnInit {
     this.errorMessage = '';
 
     this.produtoService.getVisiveis().subscribe({
-      next: products => this.initializeCatalog(products),
+      next: licors => this.initializeCatalog(licors),
       error: () => {
         this.isLoading = false;
         this.loadError = true;
         this.errorMessage =
-          'Nao foi possivel carregar os produtos agora. Verifique o endpoint /licor/visiveis.';
+          'Não foi possível carregar os produtos agora. Verifique o endpoint /licor/visiveis.';
         this.allProducts = [];
         this.filteredProducts = [];
         this.visibleProducts = [];
@@ -207,7 +207,7 @@ export class VisitanteProductsComponent implements OnInit {
 
   private initializeCatalog(data?: Licor[] | Licor | null): void {
     const dataset = Array.isArray(data) ? data : [];
-    this.allProducts = dataset.map(product => ({ ...product }));
+    this.allProducts = dataset.map(licor => ({ ...licor }));
 
     this.availableCategories = this.collectOptions(this.allProducts, this.getCategories.bind(this));
     this.availableFlavors = this.collectOptions(this.allProducts, item => [this.getFlavor(item)]);
@@ -230,20 +230,20 @@ export class VisitanteProductsComponent implements OnInit {
   }
 
   private collectOptions(
-    products: CatalogProduct[],
-    extractor: (product: CatalogProduct) => string[]
+    licors: Cataloglicor[],
+    extractor: (licor: Cataloglicor) => string[]
   ): string[] {
     const values = new Set<string>();
-    products.forEach(product => {
-      extractor(product)
+    licors.forEach(licor => {
+      extractor(licor)
         .filter(Boolean)
         .forEach(value => values.add(value));
     });
     return Array.from(values).sort((a, b) => a.localeCompare(b));
   }
 
-  private sortProducts(products: CatalogProduct[], sortOption: string): CatalogProduct[] {
-    const sorted = [...products];
+  private sortProducts(licors: Cataloglicor[], sortOption: string): Cataloglicor[] {
+    const sorted = [...licors];
     switch (sortOption) {
       case 'precoAsc':
         return sorted.sort((a, b) => (a.preco ?? 0) - (b.preco ?? 0));
@@ -260,18 +260,18 @@ export class VisitanteProductsComponent implements OnInit {
     this.visibleProducts = this.filteredProducts.slice(0, this.currentPage * this.pageSize);
   }
 
-  addToCart(product: CatalogProduct): void {
-    if (product.estoque !== undefined && product.estoque <= 0) {
+  addToCart(licor: Cataloglicor): void {
+    if (licor.estoque !== undefined && licor.estoque <= 0) {
       return;
     }
-    this.carrinhoService.addItem(product, 1);
+    this.carrinhoService.addItem(licor, 1);
   }
 
-  buyNow(product: CatalogProduct): void {
-    if (product.estoque !== undefined && product.estoque <= 0) {
+  buyNow(licor: Cataloglicor): void {
+    if (licor.estoque !== undefined && licor.estoque <= 0) {
       return;
     }
-    this.carrinhoService.addItem(product, 1);
+    this.carrinhoService.addItem(licor, 1);
     this.carrinhoService.requestOpen();
   }
 }

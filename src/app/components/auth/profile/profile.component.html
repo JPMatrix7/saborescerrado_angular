@@ -69,7 +69,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Confirmar nova senha</mat-label>
               <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmarSenha" placeholder="Repita a senha" />
-              <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Esconder confirmacao de senha'">
+              <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Esconder confirmação de senha'">
                 <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
             </mat-form-field>
@@ -85,20 +85,20 @@
         <div class="section">
           <div class="section-header">
             <h3>Telefone</h3>
-            <p>Cadastre ou altere o numero para contato.</p>
+            <p>Cadastre ou altere o número para contato.</p>
           </div>
           <div class="grid" [formGroup]="telefoneForm">
             <mat-form-field appearance="outline">
-              <mat-label>Codigo de area (DDD)</mat-label>
+              <mat-label>Código de área (DDD)</mat-label>
               <input matInput formControlName="codigoArea" maxlength="2" />
-              <mat-hint>2 digitos</mat-hint>
-              <mat-error *ngIf="telefoneForm.get('codigoArea')?.hasError('pattern')">Use apenas 2 numeros.</mat-error>
+              <mat-hint>2 dígitos</mat-hint>
+              <mat-error *ngIf="telefoneForm.get('codigoArea')?.hasError('pattern')">Use apenas 2 números.</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Numero</mat-label>
+              <mat-label>Número</mat-label>
               <input matInput formControlName="numero" maxlength="9" />
               <mat-hint>Formato: 9XXXXXXXX</mat-hint>
-              <mat-error *ngIf="telefoneForm.get('numero')?.hasError('pattern')">Numero deve ter 9 digitos e comecar com 9.</mat-error>
+              <mat-error *ngIf="telefoneForm.get('numero')?.hasError('pattern')">Número deve ter 9 dígitos e começar com 9.</mat-error>
             </mat-form-field>
           </div>
           <div class="section-actions">
@@ -110,8 +110,8 @@
 
         <div class="section">
           <div class="section-header">
-            <h3>Endereco</h3>
-            <p>Inclua o endereco principal para entregas.</p>
+            <h3>Endereço</h3>
+            <p>Inclua o endereço principal para entregas.</p>
           </div>
           <div class="grid" [formGroup]="enderecoForm">
             <mat-form-field appearance="outline">
@@ -133,8 +133,8 @@
           <mat-form-field appearance="outline">
             <mat-label>CEP</mat-label>
             <input matInput formControlName="cep" maxlength="8" />
-            <mat-hint>Apenas numeros</mat-hint>
-            <mat-error *ngIf="enderecoForm.get('cep')?.hasError('pattern')">CEP deve ter 8 digitos.</mat-error>
+            <mat-hint>Apenas números</mat-hint>
+            <mat-error *ngIf="enderecoForm.get('cep')?.hasError('pattern')">CEP deve ter 8 dígitos.</mat-error>
           </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Estado</mat-label>
@@ -162,7 +162,7 @@
 
           <div class="section-actions">
             <button mat-flat-button color="primary" type="button" (click)="saveEndereco()" [disabled]="!isEditing || savingEndereco">
-              {{ savingEndereco ? 'Salvando endereco...' : 'Salvar endereco' }}
+              {{ savingEndereco ? 'Salvando endereço...' : 'Salvar endereço' }}
             </button>
           </div>
         </div>

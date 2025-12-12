@@ -170,7 +170,7 @@ export class VisitanteHomeComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.testimonials.set([]);
-        this.testimonialsError.set('Nao foi possivel carregar os depoimentos.');
+        this.testimonialsError.set('Não foi possível carregar os depoimentos.');
         this.testimonialsLoading.set(false);
       }
     });

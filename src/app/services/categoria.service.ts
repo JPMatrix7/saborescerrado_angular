@@ -13,18 +13,9 @@ export class CategoriaService {
 
   // --- Métodos novos no estilo do exemplo ---
   getCategorias(page?: number, pageSize?: number): Observable<Categoria[]> {
-    let httpParams: HttpParams | undefined = undefined;
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      httpParams = new HttpParams()
-        .set('page', page.toString())
-        .set('page_size', pageSize.toString());
+    if (page !== undefined && pageSize !== undefined) {
+      return this.httpClient.get<Categoria[]>(`${this.baseUrl}/admin/${page}/${pageSize}`);
     }
-
-    if (httpParams) {
-      return this.httpClient.get<Categoria[]>(this.baseUrl, { params: httpParams });
-    }
-
     return this.httpClient.get<Categoria[]>(this.baseUrl);
   }
 

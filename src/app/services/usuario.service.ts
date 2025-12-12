@@ -10,8 +10,6 @@ import { Perfil } from '../models/enums.model';
 })
 export class UsuarioService {
   private baseUrl = 'http://localhost:8080/usuario';
-  private pfAdminUrl = 'http://localhost:8080/pessoafisica';
-  private pjAdminUrl = 'http://localhost:8080/pessoajuridica';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -19,7 +17,7 @@ export class UsuarioService {
   getAll(page: number = 0, pageSize: number = 10): Observable<Usuario[]> {
     return this.httpClient
       .get<Usuario[]>(`${this.baseUrl}/${page}/${pageSize}`)
-      .pipe(map((usuarios) => usuarios.map((usuario) => this.normalizeUsuario(usuario))));
+      .pipe(map((usuarios) => (Array.isArray(usuarios) ? usuarios.map((u) => this.normalizeUsuario(u)) : [])));
   }
 
   // Buscar por ID
@@ -38,12 +36,12 @@ export class UsuarioService {
 
   // Criar PF via admin
   create(dto: UsuarioCreateDTO): Observable<Usuario> {
-    return this.httpClient.post<Usuario>(this.pfAdminUrl, dto);
+    return this.httpClient.post<Usuario>(`${this.baseUrl}/admin`, dto);
   }
 
   // Criar PJ via admin
   createPJ(dto: any): Observable<any> {
-    return this.httpClient.post<any>(this.pjAdminUrl, dto);
+    return this.httpClient.post<any>(`${this.baseUrl}/admin`, dto);
   }
 
   // Atualizar completo (PUT /usuario/{id})
@@ -64,6 +62,11 @@ export class UsuarioService {
   // Atualizar email
   updateEmail(id: number, email: string): Observable<void> {
     return this.httpClient.patch<void>(`${this.baseUrl}/email/${id}`, { email });
+  }
+
+  // Atualizar login
+  updateLogin(id: number, login: string): Observable<void> {
+    return this.httpClient.patch<void>(`${this.baseUrl}/login/${id}`, { login });
   }
 
   // Atualizar senha

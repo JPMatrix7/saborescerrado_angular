@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { Licor } from '@models/licor.model';
+import { Licor, Avaliacao } from '@models/licor.model';
 import { ProdutoService } from '@services/produto.service';
+import { AvaliacaoService } from '@services/avaliacao.service';
+import { AuthService } from '@services/auth.service';
 import { fallbackImage } from '../shared/image-fallbacks';
 
 @Component({
   selector: 'app-visitante-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './visitante-product-detail.component.html',
   styleUrl: './visitante-product-detail.component.css'
 })
@@ -21,11 +24,19 @@ export class VisitanteProductDetailComponent implements OnInit, OnDestroy {
   heroImage = '';
   currentProductId?: string;
   galleryImages: string[] = [];
+  ratingInput = 5;
+  comentarioInput = '';
+  avaliacaoMessage = '';
+  avaliacaoError = '';
+  avaliando = false;
   private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly produtoService: ProdutoService
+    private readonly router: Router,
+    private readonly produtoService: ProdutoService,
+    private readonly avaliacaoService: AvaliacaoService,
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -34,7 +45,7 @@ export class VisitanteProductDetailComponent implements OnInit, OnDestroy {
       this.currentProductId = id ?? undefined;
       if (!id) {
         this.isLoading = false;
-        this.loadError = 'Produto nao encontrado. Confira o ID informado na rota.';
+        this.loadError = 'Produto não encontrado. Confira o ID informado na rota.';
         this.product = undefined;
         return;
       }
@@ -121,7 +132,7 @@ export class VisitanteProductDetailComponent implements OnInit, OnDestroy {
         this.product = undefined;
         this.isLoading = false;
         this.loadError =
-          'Nao conseguimos carregar os dados desse produto. Verifique o endpoint /licor/{id}.';
+          'Não conseguimos carregar os dados desse produto. Verifique o endpoint /licor/{id}.';
       }
     });
 
@@ -162,5 +173,52 @@ export class VisitanteProductDetailComponent implements OnInit, OnDestroy {
       0
     );
     return total / product.avaliacoes.length;
+  }
+
+  canEvaluate(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  enviarAvaliacao(): void {
+    if (!this.product?.id) return;
+    if (!this.canEvaluate()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: `/produtos/${this.product.id}` } });
+      return;
+    }
+    if (!this.ratingInput) {
+      this.avaliacaoError = 'Escolha uma nota de 1 a 5.';
+      return;
+    }
+
+    this.avaliacaoMessage = '';
+    this.avaliacaoError = '';
+    this.avaliando = true;
+
+    this.avaliacaoService
+      .criar({
+        licorId: this.product.id,
+        estrelas: this.ratingInput,
+        comentario: this.comentarioInput || undefined
+      })
+      .subscribe({
+        next: (avaliacao: Avaliacao) => {
+          this.avaliando = false;
+          this.avaliacaoMessage = 'Avaliação registrada com sucesso.';
+          this.product = {
+            ...this.product!,
+            avaliacoes: [...(this.product?.avaliacoes || []), avaliacao]
+          };
+          this.comentarioInput = '';
+        },
+        error: (err: any) => {
+          this.avaliando = false;
+          if (err?.status === 401) {
+            this.router.navigate(['/login'], { queryParams: { returnUrl: `/produtos/${this.product?.id}` } });
+            return;
+          }
+          this.avaliacaoError =
+            err?.error?.message || err?.friendlyMessage || err?.message || 'Não foi possível enviar a avaliação.';
+        }
+      });
   }
 }

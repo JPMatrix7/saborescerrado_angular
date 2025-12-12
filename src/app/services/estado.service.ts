@@ -8,21 +8,16 @@ import { Estado } from '../models/endereco.model';
 })
 export class EstadoService {
   private baseUrl = 'http://localhost:8080/estado';
+  private adminUrl = 'http://localhost:8080/estado/admin';
 
   constructor(private httpClient: HttpClient) { }
 
   // Métodos no estilo do exemplo fornecido
   getEstados(page?: number, pageSize?: number): Observable<Estado[]> {
-    let params = {};
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString()
-      };
+    if (page !== undefined && pageSize !== undefined) {
+      return this.httpClient.get<Estado[]>(`${this.adminUrl}/${page}/${pageSize}`);
     }
-
-    return this.httpClient.get<Estado[]>(this.baseUrl, { params });
+    return this.httpClient.get<Estado[]>(this.baseUrl);
   }
 
   buscarPorId(id: string): Observable<Estado> {

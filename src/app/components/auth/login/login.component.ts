@@ -52,6 +52,9 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
+    // Limpa tokens antigos antes de tentar login
+    this.authService.logout();
+
     const body: LoginRequest = { email: email!, senha: senha! };
 
     this.authService.login(body).subscribe({

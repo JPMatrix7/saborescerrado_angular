@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +17,7 @@ import { PedidoService } from '@services/pedido.service';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -31,6 +33,9 @@ export class PedidoListComponent implements OnInit {
   loading = signal(false);
   error = signal('');
   displayedColumns: string[] = ['id', 'dataCompra', 'valorTotal', 'status', 'formaPagamento', 'acoes'];
+  statusFiltro: StatusPedido | 'todos' = 'todos';
+  statusOptions = Object.values(StatusPedido);
+  statusForm: Record<number, StatusPedido> = {};
 
   constructor(
     private router: Router,
@@ -46,10 +51,11 @@ export class PedidoListComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
-    this.pedidoService.adminList(0, 100).subscribe({
+    this.pedidoService.adminList().subscribe({
       next: (data) => {
         const lista = Array.isArray(data) ? data : [];
         this.pedidos.set(lista);
+        this.hidratarFormularios(lista);
         this.loading.set(false);
       },
       error: (err: unknown) => {
@@ -58,6 +64,11 @@ export class PedidoListComponent implements OnInit {
         this.error.set((err as any)?.error?.message || (err as any)?.message || 'Erro ao carregar pedidos.');
       }
     });
+  }
+
+  pedidosFiltrados(): Compra[] {
+    if (this.statusFiltro === 'todos') return this.pedidos();
+    return this.pedidos().filter(p => p.status === this.statusFiltro);
   }
 
   getStatusColor(status: StatusPedido): string {
@@ -91,24 +102,50 @@ export class PedidoListComponent implements OnInit {
     }
   }
 
-  verDetalhes(pedido: Compra): void {
-    console.log('Ver detalhes do pedido:', pedido);
+  salvarStatus(pedido: Compra): void {
+    if (!pedido.id) return;
+    const novoStatus = this.statusForm[pedido.id];
+    this.pedidoService.adminUpdateStatus(pedido.id, novoStatus).subscribe({
+      next: (atualizado) => this.substituirPedido(atualizado),
+      error: (err: any) => {
+        this.error.set(err?.error?.message || err?.message || 'Erro ao atualizar status.');
+      }
+    });
   }
 
   cancelarPedido(id: number): void {
     if (confirm('Deseja realmente cancelar este pedido?')) {
-      console.log('Cancelando pedido:', id);
-      // Atualizar status localmente enquanto não há fluxo de cancelamento no backend
-      const pedidos = this.pedidos();
-      const index = pedidos.findIndex(p => p.id === id);
-      if (index !== -1) {
-        pedidos[index].status = StatusPedido.CANCELADO;
-        this.pedidos.set([...pedidos]);
-      }
+      this.pedidoService.delete(id).subscribe({
+        next: () => {
+          this.pedidos.set(this.pedidos().filter(p => p.id !== id));
+        },
+        error: (err: any) => {
+          this.error.set(err?.error?.message || err?.message || 'Erro ao cancelar pedido.');
+        }
+      });
     }
+  }
+
+  verDetalhes(pedido: Compra): void {
+    console.log('Ver detalhes do pedido:', pedido);
   }
 
   voltar(): void {
     this.location.back();
+  }
+
+  private hidratarFormularios(lista: Compra[]): void {
+    this.statusForm = {};
+    lista.forEach((pedido) => {
+      if (!pedido.id) return;
+      this.statusForm[pedido.id] = pedido.status;
+    });
+  }
+
+  private substituirPedido(atualizado: Compra): void {
+    if (!atualizado.id) return;
+    const lista = this.pedidos().map(p => (p.id === atualizado.id ? atualizado : p));
+    this.pedidos.set(lista);
+    this.hidratarFormularios(lista);
   }
 }

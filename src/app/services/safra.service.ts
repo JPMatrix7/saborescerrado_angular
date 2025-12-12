@@ -8,6 +8,7 @@ import { SafraLicor } from '../models/licor.model';
 })
 export class SafraService {
   private baseUrl = 'http://localhost:8080/safralicor';
+  private adminUrl = 'http://localhost:8080/safralicor/admin';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -15,8 +16,24 @@ export class SafraService {
     return this.httpClient.get<SafraLicor[]>(this.baseUrl);
   }
 
+  findAllAdmin(page: number = 0, pageSize: number = 100): Observable<SafraLicor[]> {
+    return this.httpClient.get<SafraLicor[]>(`${this.adminUrl}/${page}/${pageSize}`);
+  }
+
+  count(): Observable<number> {
+    return this.httpClient.get<number>(`${this.baseUrl}/count`);
+  }
+
   findById(id: number): Observable<SafraLicor> {
     return this.httpClient.get<SafraLicor>(`${this.baseUrl}/${id}`);
+  }
+
+  findByIdAdmin(id: number): Observable<SafraLicor> {
+    return this.httpClient.get<SafraLicor>(`${this.adminUrl}/id/${id}`);
+  }
+
+  findByFazenda(fazenda: string): Observable<SafraLicor[]> {
+    return this.httpClient.get<SafraLicor[]>(`${this.baseUrl}/fazenda/${fazenda}`);
   }
 
   create(safra: SafraLicor): Observable<SafraLicor> {

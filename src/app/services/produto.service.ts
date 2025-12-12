@@ -70,7 +70,7 @@ export class ProdutoService {
     return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  // Métodos específicos da API
+  // Métodos auxiliares antigos mantidos para compatibilidade
   getByNome(nome: string): Observable<Licor[]> {
     return this.httpClient.get<Licor[]>(`${this.baseUrl}/nome/${nome}`);
   }

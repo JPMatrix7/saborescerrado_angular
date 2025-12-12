@@ -16,9 +16,9 @@
 .section-chip {
   display: inline-flex;
   padding: 0.35rem 0.85rem;
-  border-radius: 999px;
-  background: rgba(154, 52, 18, 0.12);
-  color: #9a3412;
+  border-radius: var(--radius-full);
+  background: var(--visitante-chip-bg);
+  color: var(--visitante-primary-darker);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08rem;
@@ -26,7 +26,7 @@
 }
 
 .muted {
-  color: #6b5a52;
+  color: var(--visitante-accent-light);
   margin: 0.2rem 0;
 }
 
@@ -46,6 +46,36 @@
   border-radius: 0.75rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
   background: #fff;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 1px solid #6ee7b7;
+  border-radius: 12px;
+  color: #065f46;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.success-message svg {
+  flex-shrink: 0;
+  color: #059669;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .orders-grid {
@@ -156,18 +186,37 @@
   text-decoration: none;
   border: none;
   padding: 0.65rem 1.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-weight: 700;
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .primary-button {
-  background: linear-gradient(120deg, #b45309, #d97706);
-  color: #fff;
+  background: linear-gradient(120deg, var(--visitante-primary-dark), var(--visitante-primary));
+  color: var(--white);
 }
 
 .ghost-button {
-  background: #fff;
+  background: var(--white);
   border: 1px solid rgba(0, 0, 0, 0.12);
-  color: #1f2937;
+  color: var(--gray-800);
+}
+
+@media (max-width: 768px) {
+  .orders-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (min-width: 1400px) {
+  .orders-page {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 }

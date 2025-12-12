@@ -1,44 +1,72 @@
 <div class="cart-drawer" [class.open]="open">
   <div class="cart-header">
-    <h3>🛒 Carrinho</h3>
-    <button type="button" class="close-btn" (click)="close.emit()" aria-label="Fechar">×</button>
+    <button type="button" class="close-btn" (click)="close.emit()" aria-label="Fechar">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z"/>
+      </svg>
+    </button>
+    <h3>Meu carrinho</h3>
   </div>
 
   <div class="cart-body" *ngIf="items().length; else emptyCart">
-    <p class="items-count">{{ items().length }} {{ items().length === 1 ? 'item' : 'itens' }} no carrinho</p>
+    <p class="items-count">Itens no carrinho ({{ items().length }})</p>
     
-    <div class="preview-items">
-      <div class="preview-item" *ngFor="let item of items().slice(0, 3)">
-        <div class="preview-icon">🍷</div>
-        <div class="preview-info">
-          <p class="preview-title">{{ item.licor.nome }}</p>
-          <p class="preview-details">
-            {{ item.quantidade }}x {{ formatCurrency(item.precoUnitario ?? item.licor.preco) }}
-          </p>
+    <div class="cart-items">
+      <div class="cart-item" *ngFor="let item of items()">
+        <div class="item-image">
+          <div class="product-thumb">🛒</div>
         </div>
-        <button type="button" class="btn-remove-mini" (click)="remove(item)" title="Remover">🗑️</button>
+        
+        <div class="item-info">
+          <h4 class="item-name">{{ item.licor.nome }}</h4>
+          <p class="item-price">Preço à vista no PIX: <span class="price-value">{{ formatCurrency(item.precoUnitario ?? item.licor.preco) }}</span></p>
+          
+          <div class="quantity-controls">
+            <button type="button" class="qty-btn" (click)="decreaseQty(item)" [disabled]="item.quantidade <= 1">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <input type="number" class="qty-input" [value]="item.quantidade" (change)="updateQty(item, $any($event.target).valueAsNumber)" min="1" />
+            <button type="button" class="qty-btn" (click)="increaseQty(item)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button type="button" class="btn-remove" (click)="remove(item)" title="Remover item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L7 5.94l2.22-2.22a.75.75 0 1 1 1.06 1.06L8.06 7l2.22 2.22a.75.75 0 1 1-1.06 1.06L7 7.06l-2.22 2.22a.75.75 0 0 1-1.06-1.06L5.94 7 3.72 4.78a.75.75 0 0 1 0-1.06z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
-      <p class="more-items" *ngIf="items().length > 3">+ {{ items().length - 3 }} itens a mais</p>
     </div>
 
-    <div class="cart-total">
-      <span>Total:</span>
-      <strong>{{ formatCurrency(total()) }}</strong>
-    </div>
+    <div class="cart-footer">
+      <div class="cart-summary">
+        <div class="summary-row">
+          <span>Subtotal dos produtos:</span>
+          <span class="summary-value">{{ formatCurrency(total()) }}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>À vista no PIX</span>
+          <span class="total-value">{{ formatCurrency(total()) }}</span>
+        </div>
+      </div>
 
-    <div class="cart-actions">
-      <button type="button" class="btn-view-cart" (click)="viewCart()">
-        Visualizar Carrinho
+      <button type="button" class="btn-checkout" (click)="viewCart()">
+        IR PARA O CARRINHO
       </button>
-      <button type="button" class="btn-continue-shopping" (click)="close.emit()">
-        Continuar Comprando
+      <button type="button" class="btn-continue" (click)="close.emit()">
+        CONTINUAR COMPRANDO
       </button>
     </div>
   </div>
 
   <ng-template #emptyCart>
     <div class="empty">
-      <div class="empty-icon">🛒</div>
+      <div class="empty-icon">🛍️</div>
       <p>Seu carrinho está vazio</p>
       <button type="button" class="btn-shop" (click)="close.emit()">Explorar Produtos</button>
     </div>

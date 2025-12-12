@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
-  background: radial-gradient(circle at 15% 20%, #f6f7ff, #f0f4ff 45%, #ecfdf3 85%);
+  background: radial-gradient(circle at 15% 20%, var(--visitante-bg-gradient-start), var(--visitante-bg-gradient-mid) 45%, #ecfdf3 85%);
 }
 
 .profile-card {
@@ -16,7 +16,7 @@
 .card-header h1 {
   margin: 0;
   font-size: 1.6rem;
-  color: #1f2937;
+  color: var(--visitante-accent);
 }
 
 .card-header p {
@@ -163,6 +163,16 @@ button[mat-stroked-button] {
 }
 
 .cidade-item.selected {
-  border-color: #3f51b5;
-  background: #eef2ff;
+  border-color: var(--visitante-primary-darker);
+  background: var(--visitante-chip-bg);
+}
+
+@media (min-width: 1200px) {
+  .profile-card {
+    max-width: 900px;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
 }

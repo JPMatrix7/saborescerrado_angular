@@ -1,6 +1,6 @@
 :host {
   display: block;
-  color: #1f1a16;
+  color: var(--visitante-text-primary);
 }
 
 section {
@@ -50,10 +50,10 @@ section {
 }
 
 .tag-row span {
-  background: rgba(154, 52, 18, 0.12);
-  color: #9a3412;
+  background: var(--visitante-chip-bg);
+  color: var(--visitante-primary-darker);
   padding: 0.3rem 0.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 0.85rem;
 }
 
@@ -124,15 +124,15 @@ section {
 }
 
 .rating {
-  color: #b45309;
+  color: var(--visitante-primary-dark);
   font-weight: 700;
   margin: 0;
 }
 
 .loading-state,
 .error-state {
-  background: #fff;
-  border-radius: 1rem;
+  background: var(--white);
+  border-radius: var(--radius-lg);
   padding: 2rem;
   text-align: center;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -154,9 +154,9 @@ section {
   display: inline-flex;
   align-items: center;
   padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(154, 52, 18, 0.12);
-  color: #9a3412;
+  border-radius: var(--radius-full);
+  background: var(--visitante-chip-bg);
+  color: var(--visitante-primary-darker);
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.8rem;
@@ -165,27 +165,43 @@ section {
 
 .primary-button,
 .ghost-button {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 0.7rem 1.5rem;
   border: none;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
+  transition: all var(--transition-fast);
 }
 
 .primary-button {
-  background: linear-gradient(120deg, #b45309, #d97706);
-  color: #fff;
+  background: linear-gradient(120deg, var(--visitante-primary-dark), var(--visitante-primary));
+  color: var(--white);
 }
 
 .ghost-button {
-  border: 1px solid rgba(154, 52, 18, 0.4);
-  color: #9a3412;
+  border: 1px solid var(--visitante-border);
+  color: var(--visitante-primary-darker);
   background: transparent;
 }
 
 @media (max-width: 720px) {
   .hero-actions {
     flex-direction: column;
+  }
+  
+  .detail-hero {
+    padding: 1.5rem;
+  }
+  
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1400px) {
+  .detail-hero {
+    max-width: 1400px;
+    margin: 0 auto;
   }
 }

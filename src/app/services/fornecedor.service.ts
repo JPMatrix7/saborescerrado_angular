@@ -8,21 +8,16 @@ import { ParceiroComercial } from '../models/fornecedor.model';
 })
 export class FornecedorService {
   private baseUrl = 'http://localhost:8080/parceirocomercial';
+  private adminUrl = 'http://localhost:8080/parceirocomercial/admin';
 
   constructor(private httpClient: HttpClient) { }
 
   // Métodos no estilo do exemplo fornecido
   getParceiros(page?: number, pageSize?: number): Observable<ParceiroComercial[]> {
-    let params = {};
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString()
-      };
+    if (page !== undefined && pageSize !== undefined) {
+      return this.httpClient.get<ParceiroComercial[]>(`${this.adminUrl}/${page}/${pageSize}`);
     }
-
-    return this.httpClient.get<ParceiroComercial[]>(this.baseUrl, { params });
+    return this.httpClient.get<ParceiroComercial[]>(this.baseUrl);
   }
 
   buscarPorId(id: string): Observable<ParceiroComercial> {

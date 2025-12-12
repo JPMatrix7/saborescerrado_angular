@@ -174,7 +174,7 @@ export class ProfileComponent implements OnInit {
 
   onSubmit(): void {
     if (!this.user || !this.userDetails) {
-      this.error = 'Faca login para editar seus dados.';
+      this.error = 'Faça login para editar seus dados.';
       return;
     }
 
@@ -228,7 +228,7 @@ export class ProfileComponent implements OnInit {
 
   saveTelefone(): void {
     if (!this.userDetails) {
-      this.error = 'Faca login para editar o telefone.';
+      this.error = 'Faça login para editar o telefone.';
       return;
     }
     if (!this.isEditing) {
@@ -272,11 +272,11 @@ export class ProfileComponent implements OnInit {
 
   saveEndereco(): void {
     if (!this.userDetails) {
-      this.error = 'Faca login para editar o endereco.';
+      this.error = 'Faça login para editar o endereço.';
       return;
     }
     if (!this.isEditing) {
-      this.error = 'Clique em "Editar perfil" para alterar o endereco.';
+      this.error = 'Clique em "Editar perfil" para alterar o endereço.';
       return;
     }
 
@@ -378,7 +378,7 @@ export class ProfileComponent implements OnInit {
 
     if (!hasData) return null;
     if (!logradouro || !numero || !bairro || !cep || !cidadeId || !estadoId) {
-      this.error = 'Preencha todos os campos de endereco (estado, cidade, cep, logradouro, numero e bairro).';
+      this.error = 'Preencha todos os campos de endereço (estado, cidade, cep, logradouro, numero e bairro).';
       return null;
     }
 

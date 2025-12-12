@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 20% 20%, #f4f0ff, #eef2ff 40%, #e3f6ff 70%, #f8fbff);
+  background: radial-gradient(circle at 20% 20%, var(--visitante-bg-gradient-start), var(--visitante-bg-gradient-mid) 40%, #e3f6ff 70%, #f8fbff);
   padding: 24px;
 }
 
@@ -17,15 +17,15 @@
 .back-link {
   display: inline-flex;
   align-items: center;
-  color: #4f46e5;
+  color: var(--visitante-primary-darker);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 .back-link:hover {
-  color: #3730a3;
+  color: var(--visitante-primary-dark);
   text-decoration: underline;
 }
 
@@ -40,7 +40,7 @@
 .card-header h1 {
   margin: 0;
   font-size: 1.6rem;
-  color: #1e1b4b;
+  color: var(--visitante-accent);
 }
 
 .card-header p {
@@ -65,7 +65,7 @@ button[mat-flat-button] {
 }
 
 .helper a {
-  color: #4f46e5;
+  color: var(--visitante-primary-darker);
   font-weight: 600;
 }
 

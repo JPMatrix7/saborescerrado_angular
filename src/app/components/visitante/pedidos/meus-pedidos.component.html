@@ -16,6 +16,13 @@
     </div>
   </div>
 
+  <div class="success-message" *ngIf="successMessage">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+    </svg>
+    <span>{{ successMessage }}</span>
+  </div>
+
   <div *ngIf="isLoading" class="loading">Carregando seus pedidos...</div>
   <div *ngIf="error && !isLoading" class="error">{{ error }}</div>
 
@@ -41,16 +48,14 @@
         <div class="items">
           <div class="item" *ngFor="let item of pedido.itens">
             <div class="info">
-              <p class="title">{{ item.licor?.nome || ('Licor #' + item.licorId) }}</p>
-              <p class="muted">Qtd: {{ item.quantidade }} • {{ item.precoUnitario | currency:'BRL' }}</p>
+              <p class="title">{{ item.licor?.nome || ('Produto #' + item.licorId) }}</p>
+              <p class="muted">Qtd: {{ item.quantidade }} × {{ item.precoUnitario | currency:'BRL' }}</p>
             </div>
             <p class="price">{{ (item.precoUnitario || 0) * item.quantidade | currency:'BRL' }}</p>
           </div>
         </div>
         <div class="summary">
           <p>Total: <strong>{{ pedidoTotal(pedido) | currency:'BRL' }}</strong></p>
-          <p class="muted" *ngIf="pedido.codigoRastreio">Rastreio: {{ pedido.codigoRastreio }}</p>
-          <p class="muted" *ngIf="!pedido.codigoRastreio">Rastreio será adicionado quando o pedido for enviado.</p>
         </div>
       </div>
     </article>

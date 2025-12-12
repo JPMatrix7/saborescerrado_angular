@@ -1,8 +1,9 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PedidoService } from '@services/pedido.service';
+import { AuthService } from '@services/auth.service';
 import { Compra, ItemCompra } from '@models/compra.model';
 import { StatusPedido } from '@models/enums.model';
 
@@ -21,6 +22,7 @@ interface StatusOption {
 export class MeusPedidosComponent implements OnInit {
   isLoading = true;
   error = '';
+  successMessage = '';
   pedidos = signal<Compra[]>([]);
   filtered = signal<Compra[]>([]);
   statuses: StatusOption[] = [
@@ -33,7 +35,19 @@ export class MeusPedidosComponent implements OnInit {
   ];
   selectedStatus: StatusOption['value'] = 'todos';
 
-  constructor(private pedidoService: PedidoService) {}
+  constructor(
+    private pedidoService: PedidoService, 
+    private authService: AuthService,
+    private router: Router
+  ) {
+    // Verificar se veio de uma compra bem-sucedida
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras?.state?.['novoPedido']) {
+      this.successMessage = navigation.extras.state['mensagem'] || 'Pedido criado com sucesso!';
+      // Limpar a mensagem após 10 segundos
+      setTimeout(() => this.successMessage = '', 10000);
+    }
+  }
 
   ngOnInit(): void {
     this.loadPedidos();
@@ -42,11 +56,11 @@ export class MeusPedidosComponent implements OnInit {
   loadPedidos(): void {
     this.isLoading = true;
     this.error = '';
-    this.pedidoService.getCompras(this.selectedStatus as StatusPedido | undefined).subscribe({
+    this.pedidoService.getMeusPedidos().subscribe({
       next: (data) => {
         const list = Array.isArray(data) ? data : [];
         this.pedidos.set(list);
-        this.filtered.set(list);
+        this.aplicarFiltro();
         this.isLoading = false;
       },
       error: (err: unknown) => {
@@ -62,11 +76,7 @@ export class MeusPedidosComponent implements OnInit {
 
   onStatusChange(value: StatusOption['value']): void {
     this.selectedStatus = value;
-    if (value === 'todos') {
-      this.filtered.set(this.pedidos());
-      return;
-    }
-    this.filtered.set(this.pedidos().filter(p => p.status === value));
+    this.aplicarFiltro();
   }
 
   statusChip(status: StatusPedido): string {
@@ -87,5 +97,13 @@ export class MeusPedidosComponent implements OnInit {
   pedidoTotal(pedido: Compra): number {
     if (!pedido.itens) return pedido.valorTotal || 0;
     return pedido.itens.reduce((sum: number, item: ItemCompra) => sum + (item.precoUnitario || 0) * item.quantidade, 0);
+  }
+
+  private aplicarFiltro(): void {
+    if (this.selectedStatus === 'todos') {
+      this.filtered.set(this.pedidos());
+      return;
+    }
+    this.filtered.set(this.pedidos().filter(p => p.status === this.selectedStatus));
   }
 }

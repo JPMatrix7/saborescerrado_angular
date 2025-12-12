@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 15% 20%, #f6f7ff, #f0f4ff 45%, #ecfdf3 85%);
+  background: radial-gradient(circle at 15% 20%, var(--visitante-bg-gradient-start), var(--visitante-bg-gradient-mid) 45%, #ecfdf3 85%);
   padding: 32px 16px;
 }
 
@@ -17,15 +17,15 @@
 .back-link {
   display: inline-flex;
   align-items: center;
-  color: #4f46e5;
+  color: var(--visitante-primary-darker);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 .back-link:hover {
-  color: #3730a3;
+  color: var(--visitante-primary-dark);
   text-decoration: underline;
 }
 
@@ -40,7 +40,7 @@
 .card-header h1 {
   margin: 0;
   font-size: 1.6rem;
-  color: #1e1b4b;
+  color: var(--visitante-accent);
 }
 
 .card-header p {
@@ -64,18 +64,18 @@
 .mode-switch button {
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid #d1d5db;
-  background: #fff;
+  border: 1px solid var(--gray-300);
+  background: var(--white);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .mode-switch button.active {
-  background: linear-gradient(120deg, #b45309, #d97706);
-  color: #fff;
+  background: linear-gradient(120deg, var(--visitante-primary-dark), var(--visitante-primary));
+  color: var(--white);
   border-color: transparent;
-  box-shadow: 0 10px 20px rgba(180, 83, 9, 0.2);
+  box-shadow: 0 10px 20px var(--visitante-card-shadow);
 }
 
 .grid {
@@ -95,7 +95,7 @@ button[mat-flat-button] {
 }
 
 .helper a {
-  color: #4f46e5;
+  color: var(--visitante-primary-darker);
   font-weight: 600;
 }
 

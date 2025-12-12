@@ -10,7 +10,7 @@
 }
 
 .header h1 {
-  color: #7b1fa2;
+  color: var(--admin-primary-darker);
   font-size: 2.5em;
   margin-bottom: 10px;
 }
@@ -37,9 +37,9 @@
 }
 
 .stats-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--admin-gradient);
   color: white;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform var(--transition-normal) ease, box-shadow var(--transition-normal) ease;
 }
 
 .stats-card:hover {
@@ -245,5 +245,19 @@ mat-card-actions button {
   
   .menu-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .home-container {
+    max-width: 1600px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  }
+  
+  .menu-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 }

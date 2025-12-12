@@ -11,8 +11,13 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   // Preserva headers existentes e acrescenta os obrigatórios
   let headers = req.headers.set('Accept', 'application/json');
 
+  // Não adiciona Authorization em rotas de autenticação pública
+  const isAuthRoute = req.url.includes('/auth/login') || 
+                      req.url.includes('/usuario') && req.method === 'POST' ||
+                      req.url.includes('/pessoajuridica') && req.method === 'POST';
+
   const authHeader = authService.getAuthHeaderValue();
-  if (authHeader) {
+  if (authHeader && !isAuthRoute) {
     headers = headers.set('Authorization', authHeader);
   }
 
@@ -23,7 +28,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
   const modifiedReq = req.clone({ headers });
 
-  console.log(`[HTTP] ${req.method} ${req.url}`);
+  console.log(`[HTTP] ${req.method} ${req.url}`, isAuthRoute ? '(sem auth)' : '');
 
   return next(modifiedReq).pipe(
     retry({
@@ -47,7 +52,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
           case 401:
             authService.logout();
             router.navigate(['/login']);
-            errorMessage = 'Sessao expirada. Faca login novamente.';
+            errorMessage = 'Sessão expirada. Faça login novamente.';
             console.error('Erro 401 - Unauthorized:', error.url);
             break;
           case 400:

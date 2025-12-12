@@ -8,21 +8,16 @@ import { Cidade } from '../models/endereco.model';
 })
 export class CidadeService {
   private baseUrl = 'http://localhost:8080/cidade';
+  private adminUrl = 'http://localhost:8080/cidade/admin';
 
   constructor(private httpClient: HttpClient) { }
 
   // Métodos no estilo do exemplo fornecido
   getCidades(page?: number, pageSize?: number): Observable<Cidade[]> {
-    let params = {};
-
-    if ((page !== undefined) && (pageSize !== undefined)) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString()
-      };
+    if (page !== undefined && pageSize !== undefined) {
+      return this.httpClient.get<Cidade[]>(`${this.adminUrl}/${page}/${pageSize}`);
     }
-
-    return this.httpClient.get<Cidade[]>(this.baseUrl, { params });
+    return this.httpClient.get<Cidade[]>(this.baseUrl);
   }
 
   buscarPorId(id: string): Observable<Cidade> {
@@ -51,7 +46,7 @@ export class CidadeService {
   }
 
   findAllPaginated(page: number, pageSize: number): Observable<Cidade[]> {
-    return this.httpClient.get<Cidade[]>(`${this.baseUrl}/${page}/${pageSize}`);
+    return this.httpClient.get<Cidade[]>(`${this.adminUrl}/${page}/${pageSize}`);
   }
 
   findById(id: number): Observable<Cidade> {

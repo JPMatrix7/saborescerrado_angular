@@ -72,7 +72,7 @@
           <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Esconder confirmacao de senha'">
             <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
-          <mat-error *ngIf="passwordsDoNotMatch()">As senhas nao conferem</mat-error>
+          <mat-error *ngIf="passwordsDoNotMatch()">As senhas não conferem</mat-error>
         </mat-form-field>
       </div>
 

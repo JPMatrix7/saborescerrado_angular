@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Compra } from '../models/compra.model';
+import { Compra, CompraPayload } from '../models/compra.model';
 import { StatusPedido } from '../models/enums.model';
 
 @Injectable({
@@ -11,11 +11,9 @@ export class PedidoService {
   private baseUrl = 'http://localhost:8080/compra';
   private adminUrl = 'http://localhost:8080/compra/admin';
 
-  constructor(
-    private httpClient: HttpClient
-  ) {}
+  constructor(private httpClient: HttpClient) {}
 
-  // Usuário: lista suas compras (opcional filtro por status)
+  // Usuário/Admin: lista compras (pode filtrar por status)
   getCompras(status?: StatusPedido): Observable<Compra[]> {
     if (status) {
       return this.httpClient.get<Compra[]>(`${this.baseUrl}/status/${status}`);
@@ -23,17 +21,17 @@ export class PedidoService {
     return this.httpClient.get<Compra[]>(this.baseUrl);
   }
 
-  // Usuário: detalhe da própria compra
+  // Usuário/Admin: detalhe
   buscarPorId(id: number): Observable<Compra> {
     return this.httpClient.get<Compra>(`${this.baseUrl}/${id}`);
   }
 
-  // Usuário: cria compra (usa usuário do token)
-  incluir(compra: Partial<Compra>): Observable<Compra> {
+  // Usuário/Admin: cria compra
+  incluir(compra: CompraPayload): Observable<Compra> {
     return this.httpClient.post<Compra>(this.baseUrl, compra);
   }
 
-  // Usuário/Admin: altera status, rastreio ou itens conforme regra do backend
+  // Usuário/Admin: atualiza compra
   update(id: number, compra: Partial<Compra>): Observable<Compra> {
     return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, compra);
   }
@@ -43,29 +41,49 @@ export class PedidoService {
     return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  // Admin: lista paginada de todas as compras
-  adminList(page: number, pageSize: number): Observable<Compra[]> {
+  // Admin: lista paginada
+  adminList(page: number = 0, pageSize: number = 100): Observable<Compra[]> {
     return this.httpClient.get<Compra[]>(`${this.adminUrl}/${page}/${pageSize}`);
   }
 
-  // Admin: detalhe por id
+  // Admin: detalhe
   adminGetById(id: number): Observable<Compra> {
     return this.httpClient.get<Compra>(`${this.adminUrl}/id/${id}`);
   }
 
   // Admin: atualizar status
-  updateStatus(id: number, status: StatusPedido): Observable<Compra> {
-    return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, { status });
+  adminUpdateStatus(id: number, status: StatusPedido): Observable<Compra> {
+    return this.httpClient.patch<Compra>(`${this.adminUrl}/${id}/status`, status);
   }
 
-  // Admin: atualizar código de rastreio
-  updateRastreio(id: number, codigoRastreio: string): Observable<Compra> {
-    return this.httpClient.put<Compra>(`${this.baseUrl}/${id}`, { codigoRastreio });
+  // Admin: atualizar pagamento
+  adminUpdatePagamento(
+    id: number,
+    payload: Partial<Pick<Compra, 'pago' | 'formaPagamento' | 'chavePix' | 'linhaDigitavelBoleto' | 'ultimosDigitosCartao' | 'nomeTitularCartao' | 'bandeiraCartao'>>
+  ): Observable<Compra> {
+    return this.httpClient.patch<Compra>(`${this.adminUrl}/${id}/pagamento`, payload);
   }
 
-  // Usuário/Admin: buscar por status (alias explícito)
-  getByStatus(status: StatusPedido): Observable<Compra[]> {
-    return this.httpClient.get<Compra[]>(`${this.baseUrl}/status/${status}`);
+  // Admin: atualizar entrega
+  adminUpdateEntrega(
+    id: number,
+    payload: Partial<Pick<Compra, 'codigoRastreio' | 'dataPrevista' | 'dataEntrega' | 'status'>>
+  ): Observable<Compra> {
+    return this.httpClient.patch<Compra>(`${this.adminUrl}/${id}/entrega`, payload);
   }
 
+  // Usuário/Admin: rastrear pedido
+  rastrear(codigo: string): Observable<Compra> {
+    return this.httpClient.get<Compra>(`${this.baseUrl}/rastreio/${codigo}`);
+  }
+
+  // Usuário logado: meus pedidos
+  getMeusPedidos(): Observable<Compra[]> {
+    return this.httpClient.get<Compra[]>(`http://localhost:8080/usuario/meus-pedidos`);
+  }
+
+  // Usuário logado: detalhe de pedido específico
+  getMeuPedido(id: number): Observable<Compra> {
+    return this.httpClient.get<Compra>(`http://localhost:8080/usuario/meus-pedidos/${id}`);
+  }
 }

@@ -180,7 +180,7 @@ export class UsuarioListComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error('Erro ao alternar status do usuario:', error);
-        this.snackBar.open('Nao foi possivel atualizar o status', 'OK', { duration: 3000 });
+        this.snackBar.open('Não foi possível atualizar o status', 'OK', { duration: 3000 });
       }
     });
   }

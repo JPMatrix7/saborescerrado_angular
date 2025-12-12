@@ -45,6 +45,7 @@
   </div>
 </header>
 
+<div class="cart-overlay" [class.visible]="cartOpen()" (click)="closeCart()"></div>
 <app-carrinho [open]="cartOpen()" (close)="closeCart()"></app-carrinho>
 
 <div class="mobile-menu" [class.open]="menuOpen()">

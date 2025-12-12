@@ -50,7 +50,7 @@ export class AuthService {
   }
 
   me(): Observable<UsuarioAuth> {
-    return this.http.get<UsuarioAuth>(`${this.baseUrl}/auth/me`).pipe(tap((user) => this.saveUser(user)));
+    return this.http.get<UsuarioAuth>(`${this.baseUrl}/usuario/me`).pipe(tap((user) => this.saveUser(user)));
   }
 
   logout(): void {
@@ -103,7 +103,17 @@ export class AuthService {
   isAdmin(): boolean {
     const user = this.getUser();
     if (!user?.perfis) return false;
-    return user.perfis.some((p) => String(p).toUpperCase() === 'ADMIN' || String(p) === '1');
+    return user.perfis.some((p) => {
+      const value = String(p).toUpperCase().trim();
+      // Accept common admin representations coming from the API
+      return (
+        value === 'ADMIN' ||
+        value === 'ROLE_ADMIN' ||
+        value === 'ADMINISTRADOR' ||
+        value === '1' || // Numeric profile id returned as string
+        value.endsWith('_ADMIN') // Fallback for variations like PERFIL_ADMIN
+      );
+    });
   }
 
   private saveToken(token: string): void {

@@ -120,8 +120,33 @@
           </article>
         </div>
         <ng-template #avaliacoesPlaceholder>
-          <p>Ainda sem avaliacoes públicas. Assim que chegarem, elas aparecem aqui automaticamente.</p>
+          <p>Ainda sem avaliacoes publicas. Assim que chegarem, elas aparecem aqui automaticamente.</p>
         </ng-template>
+
+        <div class="avaliacao-form">
+          <h3>Deixe sua avaliacao</h3>
+          <div *ngIf="canEvaluate(); else loginPrompt">
+            <label>
+              Nota
+              <select [(ngModel)]="ratingInput">
+                <option *ngFor="let nota of [5,4,3,2,1]" [ngValue]="nota">{{ nota }} estrela(s)</option>
+              </select>
+            </label>
+            <label>
+              Comentario (opcional)
+              <textarea [(ngModel)]="comentarioInput" rows="3" placeholder="Conte sua experiencia"></textarea>
+            </label>
+            <button class="primary-button" type="button" (click)="enviarAvaliacao()" [disabled]="avaliando">
+              {{ avaliando ? 'Enviando...' : 'Enviar avaliacao' }}
+            </button>
+            <p class="success-message" *ngIf="avaliacaoMessage">{{ avaliacaoMessage }}</p>
+            <p class="error-message" *ngIf="avaliacaoError">{{ avaliacaoError }}</p>
+          </div>
+          <ng-template #loginPrompt>
+            <p>Faca login para avaliar este produto.</p>
+            <a class="primary-button" [routerLink]="['/login']" [queryParams]="{ returnUrl: '/produtos/' + current.id }">Ir para login</a>
+          </ng-template>
+        </div>
       </article>
     </section>
   </ng-container>

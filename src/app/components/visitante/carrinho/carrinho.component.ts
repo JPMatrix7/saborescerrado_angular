@@ -38,6 +38,22 @@ export class CarrinhoComponent {
     this.carrinhoService.remove(identifier);
   }
 
+  increaseQty(item: CarrinhoItem): void {
+    if (!item.licor.id) return;
+    this.carrinhoService.updateQuantity(item.licor.id, item.quantidade + 1);
+  }
+
+  decreaseQty(item: CarrinhoItem): void {
+    if (!item.licor.id || item.quantidade <= 1) return;
+    this.carrinhoService.updateQuantity(item.licor.id, item.quantidade - 1);
+  }
+
+  updateQty(item: CarrinhoItem, qty: number): void {
+    if (!item.licor.id) return;
+    const normalized = Math.max(1, qty || 1);
+    this.carrinhoService.updateQuantity(item.licor.id, normalized);
+  }
+
   viewCart(): void {
     this.close.emit();
     this.router.navigate(['/carrinho']);
